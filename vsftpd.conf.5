@@ -84,7 +84,7 @@ and
 .BR anonymous
 are recognised as anonymous logins.
 
-Default: YES
+Default: NO
 .TP
 .B ascii_download_enable
 When enabled, ASCII mode data transfers will be honoured on downloads.
@@ -153,7 +153,7 @@ permission, or shell access. Only enable if you know what you are doing.
 Note that these security implications are not vsftpd specific. They apply to
 all FTP daemons which offer to put local users in chroot() jails.
 
-Default: NO
+Default: YES
 .TP
 .B connect_from_port_20
 This controls whether PORT style data connections use port 20 (ftp-data) on
@@ -194,7 +194,12 @@ enter a new directory. By default, a directory is scanned for the
 file .message, but that may be overridden with the configuration setting
 .BR message_file .
 
-Default: NO (but the sample config file enables it)
+Default: YES 
+.TP
+.B dirmessage_always
+If enabled, the above mentioned messages are displayed always and not only the first time a directory is entered.
+
+Default: NO
 .TP
 .B download_enable
 If set to NO, all download requests will give permission denied.
@@ -262,7 +267,7 @@ Default: NO
 If enabled, all user and group information in directory listings will be
 displayed as "ftp".
 
-Default: NO
+Default: YES
 .TP
 .B implicit_ssl
 If enabled, an SSL handshake is the first thing expect on all connections
@@ -294,6 +299,12 @@ including virtual users.
 
 Default: NO
 .TP
+.B root_enable
+Controls whether root logins are permitted or not. If enabled, local_enable is used to determine whether
+local accounts (including root) are able to login.
+
+Default: NO
+.TP
 .B lock_upload_files
 When enabled, all uploads proceed with a write lock on the upload file. All
 downloads proceed with a shared read lock on the download file. WARNING!
@@ -306,7 +317,7 @@ Default: YES
 When enabled, all FTP requests and responses are logged, providing the option
 xferlog_std_format is not enabled. Useful for debugging.
 
-Default: NO
+Default: YES
 .TP
 .B ls_recurse_enable
 When enabled, this setting will allow the use of "ls -R". This is a minor
@@ -425,6 +436,12 @@ upload ownership changing, connecting from port 20 and listen ports less than
 
 Default: NO
 .TP
+.B seccomp_sandbox
+Make usage of the seccomp_sandbox. ONLY turn off if you have specific problems regarding MySQL users or get something like
+"500 OOPS: priv_sock_get_cmd"
+
+Default: YES
+.TP
 .B secure_email_list_enable
 Set to YES if you want only a specified list of e-mail passwords for anonymous
 logins to be accepted. This is useful as a low-hassle way of restricting
@@ -465,7 +482,7 @@ guarantees about the security of the OpenSSL libraries. By enabling this
 option, you are declaring that you trust the security of your installed
 OpenSSL library.
 
-Default: NO
+Default: YES
 .TP
 .B ssl_request_cert
 If enabled, vsftpd will request (but not necessarily require; see
@@ -519,6 +536,15 @@ Default: NO
 .B syslog_enable
 If enabled, then any log output which would have gone to /var/log/vsftpd.log
 goes to the system log instead. Logging is done under the FTPD facility.
+
+Default: NO
+.TP
+.B mysql_enable
+If enabled, then any log output which would have gone to /var/log/vsftpd.log
+goes to a MySQL table instead.
+You have to install the mysqllib for your distribution.
+Unfortunately you have to turn OFF the seccomp_sandbox otherwise you'll get a "500 OOPS: chield died"
+error. If someone can point me to a solution for fixing the seccomp policy that would by great!
 
 Default: NO
 .TP
@@ -607,7 +633,7 @@ By default, this file will be placed at /var/log/vsftpd.log, but this location
 may be overridden using the configuration setting
 .BR vsftpd_log_file .
 
-Default: NO (but the sample config file enables it)
+Default: YES
 .TP
 .B xferlog_std_format
 If enabled, the transfer log file will be written in standard xferlog format,
@@ -747,6 +773,16 @@ You probably don't want to change this, but try setting it to something like
 8192 for a much smoother bandwidth limiter.
 
 Default: 0 (let vsftpd pick a sensible setting)
+.TP
+.B mysql_database_connectionflags
+MySQL connection flags to use. See the MySQL documentation.
+
+Default: 0 (no connection flags)
+.TP
+.B mysql_database_port
+The port of the MySQL server to connect to.
+
+Default: 0 (let the MySQL lib pick the default)
 
 .SH STRING OPTIONS
 Below is a list of string options.
@@ -1052,7 +1088,38 @@ Alternatively, it is written if you have set the option
 .BR dual_log_enable .
 
 Default: /var/log/xferlog
+.TP
+.B mysql_database_username
+The MySQL username. This user needs and should only be granted INSERT rights!
+
+Default: vsftpd_logger
+.TP
+.B mysql_database_password
+The MySQL password.
+
+Default: very_secure_password123
+.TP
+.B tunable_mysql_database_host
+The MySQL server.
+
+Default: localhost
+.TP
+.B mysql_database_socketname
+The MySQL UNIX Socket name.
+
+Default: 0 (default socket)
+.TP
+.B mysql_database_dbname
+The name of the database where the logs should go.
+
+Default: vsftpd
+.TP
+.B mysql_database_tablename
+The name of the database table where the logs should go.
+
+Default: log
 
 .SH AUTHOR
 scarybeasts@gmail.com
+github@philipp-koch.net
 

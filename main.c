@@ -54,7 +54,7 @@ main(int argc, const char* argv[])
     /* Pre-chroot() cache */
     INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, 1,
     /* Logging */
-    -1, -1, INIT_MYSTR, 0, 0, 0, INIT_MYSTR, 0,
+    -1, -1, INIT_MYSTR, 0, 0, 0, INIT_MYSTR, 0, 0,
     /* Buffers */
     INIT_MYSTR, INIT_MYSTR,
     /* Parent <-> child comms */

@@ -26,7 +26,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
   p_user = str_getpwnam(p_user_str);
   if (p_user == 0)
   {
-    die2("cannot locate user entry:", str_getbuf(p_user_str));
+    die2("Konnte Benutzer nicht finden:", str_getbuf(p_user_str));
   }
   {
     struct mystr dir_str = INIT_MYSTR;
@@ -68,7 +68,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
       retval = str_chdir(&dir_str);
       if (retval != 0)
       {
-        die2("cannot change directory:", str_getbuf(&dir_str));
+        die2("Konnte Verzeichnis nicht wechseln:", str_getbuf(&dir_str));
       }
       if (p_ext_dir_str && !str_isempty(p_ext_dir_str))
       {
@@ -83,7 +83,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
       }
       if (retval != 0)
       {
-        die2("cannot change directory:", str_getbuf(p_ext_dir_str));
+        die2("Konnte Verzeichnis nicht wechseln:", str_getbuf(p_ext_dir_str));
       }
       if (options & VSF_SECUTIL_OPTION_CHANGE_EUID)
       {
@@ -137,7 +137,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
   {
     if (vsf_sysutil_write_access("/"))
     {
-      die("vsftpd: refusing to run with writable root inside chroot()");
+      die("chroot top beschreibar");
     }
   }
 }

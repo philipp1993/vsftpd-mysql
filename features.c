@@ -15,7 +15,7 @@
 void
 handle_feat(struct vsf_session* p_sess)
 {
-  vsf_cmdio_write_hyphen(p_sess, FTP_FEAT, "Features:");
+  vsf_cmdio_write_hyphen(p_sess, FTP_FEAT, "Funktionen:");
   if (tunable_ssl_enable)
   {
     if (tunable_sslv2 || tunable_sslv3)

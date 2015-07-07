@@ -17,11 +17,11 @@ handle_opts(struct vsf_session* p_sess)
   str_upper(&p_sess->ftp_arg_str);
   if (str_equal_text(&p_sess->ftp_arg_str, "UTF8 ON"))
   {
-    vsf_cmdio_write(p_sess, FTP_OPTSOK, "Always in UTF8 mode.");
+    vsf_cmdio_write(p_sess, FTP_OPTSOK, "Immer im UFT8 Modus.");
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_BADOPTS, "Option not understood.");
+    vsf_cmdio_write(p_sess, FTP_BADOPTS, "Option nicht verstanden.");
   }
 }
 

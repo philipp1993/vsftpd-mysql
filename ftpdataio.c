@@ -122,12 +122,12 @@ vsf_ftpdataio_get_pasv_fd(struct vsf_session* p_sess)
   if (remote_fd == -1)
   {
     vsf_cmdio_write(p_sess, FTP_BADSENDCONN,
-                    "Failed to establish connection.");
+                    "Konnte keine Verbindung aufbauen.");
     return remote_fd;
   }
   else if (remote_fd == -2)
   {
-    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, "Security: Bad IP connecting.");
+    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, "Ihre IP Adresse wurde gesperrt.");
     return -1;
   }
   init_data_sock_params(p_sess, remote_fd);
@@ -149,7 +149,7 @@ vsf_ftpdataio_get_port_fd(struct vsf_session* p_sess)
   if (vsf_sysutil_retval_is_error(remote_fd))
   {
     vsf_cmdio_write(p_sess, FTP_BADSENDCONN,
-                    "Failed to establish connection.");
+                    "Konnte keine Verbindung aufbauen.");
     return -1;
   }
   init_data_sock_params(p_sess, remote_fd);

@@ -167,7 +167,7 @@ ssl_control_handshake(struct vsf_session* p_sess)
   if (!ssl_session_init(p_sess))
   {
     struct mystr err_str = INIT_MYSTR;
-    str_alloc_text(&err_str, "Negotiation failed: ");
+    str_alloc_text(&err_str, "Verbindungsaushandlung fehlgeschlagen: ");
     /* Technically, we shouldn't leak such detailed error messages. */
     str_append_text(&err_str, get_ssl_error());
     vsf_cmdio_write_str(p_sess, FTP_TLS_FAIL, &err_str);
@@ -185,7 +185,7 @@ handle_auth(struct vsf_session* p_sess)
       str_equal_text(&p_sess->ftp_arg_str, "SSL") ||
       str_equal_text(&p_sess->ftp_arg_str, "TLS-P"))
   {
-    vsf_cmdio_write(p_sess, FTP_AUTHOK, "Proceed with negotiation.");
+    vsf_cmdio_write(p_sess, FTP_AUTHOK, "Fortfahren mit Verbindungsaushandlung.");
     ssl_control_handshake(p_sess);
     if (str_equal_text(&p_sess->ftp_arg_str, "SSL") ||
         str_equal_text(&p_sess->ftp_arg_str, "TLS-P"))
@@ -195,7 +195,7 @@ handle_auth(struct vsf_session* p_sess)
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_BADAUTH, "Unknown AUTH type.");
+    vsf_cmdio_write(p_sess, FTP_BADAUTH, "Unbekannter AUTH Typ.");
   }
 }
 
@@ -204,11 +204,11 @@ handle_pbsz(struct vsf_session* p_sess)
 {
   if (!p_sess->control_use_ssl)
   {
-    vsf_cmdio_write(p_sess, FTP_BADPBSZ, "PBSZ needs a secure connection.");
+    vsf_cmdio_write(p_sess, FTP_BADPBSZ, "PBSZ benoetigt eine sichere Verbindung.");
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_PBSZOK, "PBSZ set to 0.");
+    vsf_cmdio_write(p_sess, FTP_PBSZOK, "PBSZ auf 0 gesetzt.");
   }
 }
 
@@ -218,26 +218,26 @@ handle_prot(struct vsf_session* p_sess)
   str_upper(&p_sess->ftp_arg_str);
   if (!p_sess->control_use_ssl)
   {
-    vsf_cmdio_write(p_sess, FTP_BADPROT, "PROT needs a secure connection.");
+    vsf_cmdio_write(p_sess, FTP_BADPROT, "PROT benoetigt eine sichere Verbindung.");
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "C"))
   {
     p_sess->data_use_ssl = 0;
-    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT now Clear.");
+    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT jetzt Frei.");
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "P"))
   {
     p_sess->data_use_ssl = 1;
-    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT now Private.");
+    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT jetzt Privat.");
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "S") ||
            str_equal_text(&p_sess->ftp_arg_str, "E"))
   {
-    vsf_cmdio_write(p_sess, FTP_NOHANDLEPROT, "PROT not supported.");
+    vsf_cmdio_write(p_sess, FTP_NOHANDLEPROT, "PROT nicht unterstuetzt.");
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_NOSUCHPROT, "PROT not recognized.");
+    vsf_cmdio_write(p_sess, FTP_NOSUCHPROT, "PROT nicht erkannt.");
   }
 }
 
@@ -275,8 +275,8 @@ ssl_read_common(struct vsf_session* p_sess,
    */
   if (retval == 0 && SSL_get_shutdown(p_ssl) != SSL_RECEIVED_SHUTDOWN)
   {
-    str_alloc_text(&debug_str, "Connection terminated without SSL shutdown "
-                               "- buggy client?");
+    str_alloc_text(&debug_str, "Verbindung ohne SSL Beendigung beendet "
+                               "- fehlerhafter Client?");
     vsf_log_line(p_sess, kVSFLogEntryDebug, &debug_str);
     if (tunable_strict_ssl_read_eof)
     {
@@ -335,10 +335,10 @@ maybe_log_shutdown_state(struct vsf_session* p_sess)
   if (tunable_debug_ssl)
   {
     int ret = SSL_get_shutdown(p_sess->p_data_ssl);
-    str_alloc_text(&debug_str, "SSL shutdown state is: ");
+    str_alloc_text(&debug_str, "SSL Beendigung ist: ");
     if (ret == 0)
     {
-      str_append_text(&debug_str, "NONE");
+      str_append_text(&debug_str, "KEINE");
     }
     else if (ret == SSL_SENT_SHUTDOWN)
     {

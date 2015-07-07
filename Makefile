@@ -3,12 +3,12 @@ CC 	=	gcc
 INSTALL	=	install
 IFLAGS  = -idirafter dummyinc
 #CFLAGS = -g
-CFLAGS	=	-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 \
+CFLAGS	=	-g -O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 \
 	-Wall -W -Wshadow -Werror -Wformat-security \
 	-D_FORTIFY_SOURCE=2 \
 	#-pedantic -Wconversion
 
-LIBS	=	`./vsf_findlibs.sh`
+LIBS	=	`./vsf_findlibs.sh` `mysql_config --cflags --libs`
 LINK	=	-Wl,-s
 LDFLAGS	=	-fPIE -pie -Wl,-z,relro -Wl,-z,now
 

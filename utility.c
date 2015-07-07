@@ -42,7 +42,7 @@ bug(const char* p_text)
 {
   /* Rats. Try and write the reason to the network for diagnostics */
   vsf_sysutil_activate_noblock(VSFTP_COMMAND_FD);
-  (void) vsf_sysutil_write_loop(VSFTP_COMMAND_FD, "500 OOPS: ", 10);
+  (void) vsf_sysutil_write_loop(VSFTP_COMMAND_FD, "500 FEHLER: ", 12);
   (void) vsf_sysutil_write_loop(VSFTP_COMMAND_FD, p_text,
                                 vsf_sysutil_strlen(p_text));
   (void) vsf_sysutil_write_loop(VSFTP_COMMAND_FD, "\r\n", 2);

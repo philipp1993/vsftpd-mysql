@@ -11,6 +11,7 @@ void tunables_load_defaults();
 /* Booleans */
 extern int tunable_anonymous_enable;          /* Allow anon logins */
 extern int tunable_local_enable;              /* Allow local logins */
+extern int tunable_root_enable;               /* Allow root logins */
 extern int tunable_pasv_enable;               /* Allow PASV */
 extern int tunable_port_enable;               /* Allow PORT */
 extern int tunable_chroot_local_user;         /* Restrict local to home dir */
@@ -22,6 +23,7 @@ extern int tunable_chown_uploads;             /* chown() anon uploaded files */
 extern int tunable_connect_from_port_20;      /* PORT connects from port 20 */
 extern int tunable_xferlog_enable;            /* Log transfers to a file */
 extern int tunable_dirmessage_enable;         /* Look for + output .message */
+extern int tunable_dirmessage_always;		  /* Display .message allways */
 extern int tunable_anon_world_readable_only;  /* Only serve world readable */
 extern int tunable_async_abor_enable;         /* Enable async ABOR requests */
 extern int tunable_ascii_upload_enable;       /* Permit ASCII upload */
@@ -89,6 +91,8 @@ extern int tunable_ftp_enable;                /* Allow FTP protocol */
 extern int tunable_http_enable;               /* Allow HTTP protocol */
 extern int tunable_seccomp_sandbox;           /* seccomp filter sandbox */
 extern int tunable_allow_writeable_chroot;    /* Allow misconfiguration */
+/* DB plugins defines */
+extern int tunable_mysql_enable;			  /* Write logs to an mysql database */
 
 /* Integer/numeric defines */
 extern unsigned int tunable_accept_timeout;
@@ -111,6 +115,9 @@ extern unsigned int tunable_delay_failed_login;
 extern unsigned int tunable_delay_successful_login;
 extern unsigned int tunable_max_login_fails;
 extern unsigned int tunable_chown_upload_mode;
+/* DB plugins defines */
+extern unsigned int tunable_mysql_database_port;
+extern unsigned int tunable_mysql_database_connectionflags;
 
 /* String defines */
 extern const char* tunable_secure_chroot_dir;
@@ -145,6 +152,14 @@ extern const char* tunable_rsa_private_key_file;
 extern const char* tunable_dsa_private_key_file;
 extern const char* tunable_ca_certs_file;
 extern const char* tunable_cmds_denied;
+/* DB plugins defines */
+extern const char* tunable_mysql_database_username;
+extern const char* tunable_mysql_database_password;
+extern const char* tunable_mysql_database_host;
+extern const char* tunable_mysql_database_socketname;
+extern const char* tunable_mysql_database_dbname;
+extern const char* tunable_mysql_database_tablename;
+
 
 #endif /* VSF_TUNABLES_H */
 

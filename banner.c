@@ -39,8 +39,8 @@ vsf_banner_dir_changed(struct vsf_session* p_sess, int ftpcode)
     *p_sess->p_visited_dir_list = the_list;
   }
   str_getcwd(&dir_str);
-  /* Do nothing if we already visited this directory */
-  if (!str_list_contains_str(p_sess->p_visited_dir_list, &dir_str))
+  /* Only do something if the directory wasn't visited before or if messages should display always'*/
+  if (!str_list_contains_str(p_sess->p_visited_dir_list, &dir_str) || tunable_dirmessage_always)
   {
     /* Just in case, cap the max. no of visited directories we'll remember */
     if (str_list_get_length(p_sess->p_visited_dir_list) <

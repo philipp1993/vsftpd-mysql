@@ -9,6 +9,10 @@
 #include "filesize.h"
 #endif
 
+#ifndef _mysql_h
+#include <mysql/mysql.h>
+#endif
+
 struct vsf_sysutil_sockaddr;
 struct mystr_list;
 
@@ -74,6 +78,7 @@ struct vsf_session
   long log_start_usec;
   struct mystr log_str;
   filesize_t transfer_size;
+  MYSQL* mysql_log_con;
 
   /* Buffers */
   struct mystr ftp_cmd_str;

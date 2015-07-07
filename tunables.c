@@ -10,6 +10,7 @@
 
 int tunable_anonymous_enable;
 int tunable_local_enable;
+int tunable_root_enable;
 int tunable_pasv_enable;
 int tunable_port_enable;
 int tunable_chroot_local_user;
@@ -21,6 +22,7 @@ int tunable_chown_uploads;
 int tunable_connect_from_port_20;
 int tunable_xferlog_enable;
 int tunable_dirmessage_enable;
+int tunable_dirmessage_always;
 int tunable_anon_world_readable_only;
 int tunable_async_abor_enable;
 int tunable_ascii_upload_enable;
@@ -88,6 +90,8 @@ int tunable_ftp_enable;
 int tunable_http_enable;
 int tunable_seccomp_sandbox;
 int tunable_allow_writeable_chroot;
+/* DB plugins defines */
+int tunable_mysql_enable;			  
 
 unsigned int tunable_accept_timeout;
 unsigned int tunable_connect_timeout;
@@ -109,6 +113,9 @@ unsigned int tunable_delay_failed_login;
 unsigned int tunable_delay_successful_login;
 unsigned int tunable_max_login_fails;
 unsigned int tunable_chown_upload_mode;
+/* DB plugins defines */
+unsigned int tunable_mysql_database_port;
+unsigned int tunable_mysql_database_connectionflags;
 
 const char* tunable_secure_chroot_dir;
 const char* tunable_ftp_username;
@@ -142,44 +149,55 @@ const char* tunable_ssl_ciphers;
 const char* tunable_rsa_private_key_file;
 const char* tunable_dsa_private_key_file;
 const char* tunable_ca_certs_file;
+/* DB plugins defines */
+const char* tunable_mysql_database_username;
+const char* tunable_mysql_database_password;
+const char* tunable_mysql_database_host;
+const char* tunable_mysql_database_socketname;
+const char* tunable_mysql_database_dbname;
+const char* tunable_mysql_database_tablename;
+
+
 
 static void install_str_setting(const char* p_value, const char** p_storage);
 
 void
 tunables_load_defaults()
 {
-  tunable_anonymous_enable = 1;
+  tunable_anonymous_enable = 0;
   tunable_local_enable = 0;
+  tunable_root_enable = 0;
   tunable_pasv_enable = 1;
   tunable_port_enable = 1;
-  tunable_chroot_local_user = 0;
+  tunable_chroot_local_user = 1;
   tunable_write_enable = 0;
   tunable_anon_upload_enable = 0;
   tunable_anon_mkdir_write_enable = 0;
   tunable_anon_other_write_enable = 0;
   tunable_chown_uploads = 0;
   tunable_connect_from_port_20 = 0;
-  tunable_xferlog_enable = 0;
-  tunable_dirmessage_enable = 0;
+  tunable_xferlog_enable = 1;
+  tunable_dirmessage_enable = 1;
+  tunable_dirmessage_always = 0;
   tunable_anon_world_readable_only = 1;
   tunable_async_abor_enable = 0;
   tunable_ascii_upload_enable = 0;
   tunable_ascii_download_enable = 0;
   tunable_one_process_model = 0;
-  tunable_xferlog_std_format = 0;
+  tunable_xferlog_std_format = 1;
   tunable_pasv_promiscuous = 0;
   tunable_deny_email_enable = 0;
   tunable_chroot_list_enable = 0;
   tunable_setproctitle_enable = 0;
   tunable_text_userdb_names = 0;
   tunable_ls_recurse_enable = 0;
-  tunable_log_ftp_protocol = 0;
+  tunable_log_ftp_protocol = 1;
   tunable_guest_enable = 0;
   tunable_userlist_enable = 0;
   tunable_userlist_deny = 1;
   tunable_use_localtime = 0;
   tunable_check_shell = 1;
-  tunable_hide_ids = 0;
+  tunable_hide_ids = 1;
   tunable_listen = 1;
   tunable_port_promiscuous = 0;
   tunable_passwd_chroot_enable = 0;
@@ -199,7 +217,7 @@ tunables_load_defaults()
   tunable_secure_email_list_enable = 0;
   tunable_run_as_launching_user = 0;
   tunable_no_log_lock = 0;
-  tunable_ssl_enable = 0;
+  tunable_ssl_enable = 1;
   tunable_allow_anon_ssl = 0;
   tunable_force_local_logins_ssl = 1;
   tunable_force_local_data_ssl = 1;
@@ -228,6 +246,8 @@ tunables_load_defaults()
   tunable_http_enable = 0;
   tunable_seccomp_sandbox = 1;
   tunable_allow_writeable_chroot = 0;
+    /* DB plugins defines */
+  tunable_mysql_enable=0;
 
   tunable_accept_timeout = 60;
   tunable_connect_timeout = 60;
@@ -253,6 +273,9 @@ tunables_load_defaults()
   tunable_max_login_fails = 3;
   /* -rw------- */
   tunable_chown_upload_mode = 0600;
+  /* DB plugins defines */
+  tunable_mysql_database_port=0; //use built-in value
+  tunable_mysql_database_connectionflags=0; //none
 
   install_str_setting("/usr/share/empty", &tunable_secure_chroot_dir);
   install_str_setting("ftp", &tunable_ftp_username);
@@ -288,6 +311,15 @@ tunables_load_defaults()
   install_str_setting(0, &tunable_rsa_private_key_file);
   install_str_setting(0, &tunable_dsa_private_key_file);
   install_str_setting(0, &tunable_ca_certs_file);
+  
+  /* DB plugins defines */
+  install_str_setting("vsftpd_logger",&tunable_mysql_database_username);
+  install_str_setting("very_secure_password123",&tunable_mysql_database_password);
+  install_str_setting("localhost",&tunable_mysql_database_host);
+  install_str_setting(0,&tunable_mysql_database_socketname);
+  install_str_setting("vsftpd",&tunable_mysql_database_dbname);
+ install_str_setting("log",&tunable_mysql_database_tablename);
+
 }
 
 void

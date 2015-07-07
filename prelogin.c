@@ -70,26 +70,26 @@ check_limits(struct vsf_session* p_sess)
   if (tunable_max_clients > 0 &&
       p_sess->num_clients > tunable_max_clients)
   {
-    str_alloc_text(&str_log_line, "Connection refused: too many sessions.");
+    str_alloc_text(&str_log_line, "Verbindung abgelehnt: Zu viele Verbindungen.");
     vsf_log_line(p_sess, kVSFLogEntryConnection, &str_log_line);
     vsf_cmdio_write_exit(p_sess, FTP_TOO_MANY_USERS,
-      "There are too many connected users, please try later.", 1);
+      "Es sind bereits zu viele Nutzer angemeldet. Bitte versuchen Sie es spaeter erneut.", 1);
   }
   if (tunable_max_per_ip > 0 &&
       p_sess->num_this_ip > tunable_max_per_ip)
   {
     str_alloc_text(&str_log_line,
-                   "Connection refused: too many sessions for this address.");
+                   "Verbindung abgelehnt: zu viele Verbindungen von ihrer IP.");
     vsf_log_line(p_sess, kVSFLogEntryConnection, &str_log_line);
     vsf_cmdio_write_exit(p_sess, FTP_IP_LIMIT,
-      "There are too many connections from your internet address.", 1);
+      "Es sind bereits zu viele Verbindungen von Ihrer IP Adresse aus aufgebaut.", 1);
   }
   if (!p_sess->tcp_wrapper_ok)
   {
     str_alloc_text(&str_log_line,
                    "Connection refused: tcp_wrappers denial.");
     vsf_log_line(p_sess, kVSFLogEntryConnection, &str_log_line);
-    vsf_cmdio_write_exit(p_sess, FTP_IP_DENY, "Service not available.", 1);
+    vsf_cmdio_write_exit(p_sess, FTP_IP_DENY, "Dienst nicht verfuegbar.", 1);
   }
   vsf_log_line(p_sess, kVSFLogEntryConnection, &str_log_line);
 }
@@ -133,7 +133,7 @@ parse_username_password(struct vsf_session* p_sess)
       }
       else if (str_equal_text(&p_sess->ftp_cmd_str, "QUIT"))
       {
-        vsf_cmdio_write_exit(p_sess, FTP_GOODBYE, "Goodbye.", 0);
+        vsf_cmdio_write_exit(p_sess, FTP_GOODBYE, "Auf Wiedersehen.", 0);
       }
       else if (str_equal_text(&p_sess->ftp_cmd_str, "FEAT"))
       {
@@ -167,7 +167,7 @@ parse_username_password(struct vsf_session* p_sess)
       else
       {
         vsf_cmdio_write(p_sess, FTP_LOGINERR,
-                        "Please login with USER and PASS.");
+                        "Bitte melden Sie sich mit USER und PASS an.");
       }
     }
     else if (tunable_http_enable)
@@ -210,10 +210,19 @@ handle_user_command(struct vsf_session* p_sess)
   {
     is_anon = 0;
   }
+  
+  if(str_equal_text(&p_sess->ftp_arg_str, "ROOT") && !tunable_root_enable)
+  {
+	vsf_cmdio_write(
+      p_sess, FTP_LOGINERR, "KEIN ZUGRIFF FUER DEN ROOT ACCOUNT!!!");
+    str_empty(&p_sess->user_str);
+    return;  
+  }
+  
   if (!tunable_local_enable && !is_anon)
   {
     vsf_cmdio_write(
-      p_sess, FTP_LOGINERR, "This FTP server is anonymous only.");
+      p_sess, FTP_LOGINERR, "Dieser FTP Server ist nur anonym zu erreichen.");
     str_empty(&p_sess->user_str);
     return;
   }
@@ -221,7 +230,7 @@ handle_user_command(struct vsf_session* p_sess)
       !tunable_force_anon_logins_ssl)
   {
     vsf_cmdio_write(
-      p_sess, FTP_LOGINERR, "Anonymous sessions may not use encryption.");
+      p_sess, FTP_LOGINERR, "Anonyme Sitzungen koennen unverschluesselt sein.");
     str_empty(&p_sess->user_str);
     return;
   }
@@ -229,13 +238,13 @@ handle_user_command(struct vsf_session* p_sess)
       tunable_force_local_logins_ssl)
   {
     vsf_cmdio_write_exit(
-      p_sess, FTP_LOGINERR, "Non-anonymous sessions must use encryption.", 1);
+      p_sess, FTP_LOGINERR, "Verbindungen muessen verschluesselt sein.", 1);
   }
   if (tunable_ssl_enable && is_anon && !p_sess->control_use_ssl &&
       tunable_force_anon_logins_ssl)
   { 
     vsf_cmdio_write_exit(
-      p_sess, FTP_LOGINERR, "Anonymous sessions must use encryption.", 1);
+      p_sess, FTP_LOGINERR, "Anonyme Sitzungen muessen verschluesselt sein.", 1);
   }
   if (tunable_userlist_enable)
   {
@@ -244,7 +253,7 @@ handle_user_command(struct vsf_session* p_sess)
         (!located && !tunable_userlist_deny))
     {
       check_login_delay();
-      vsf_cmdio_write(p_sess, FTP_LOGINERR, "Permission denied.");
+      vsf_cmdio_write(p_sess, FTP_LOGINERR, "Zugriff verweigert.");
       check_login_fails(p_sess);
       str_empty(&p_sess->user_str);
       return;
@@ -258,7 +267,7 @@ handle_user_command(struct vsf_session* p_sess)
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_GIVEPWORD, "Please specify the password.");
+    vsf_cmdio_write(p_sess, FTP_GIVEPWORD, "Bitte geben Sie ein Passwort an.");
   }
 }
 
@@ -267,7 +276,7 @@ handle_pass_command(struct vsf_session* p_sess)
 {
   if (str_isempty(&p_sess->user_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NEEDUSER, "Login with USER first.");
+    vsf_cmdio_write(p_sess, FTP_NEEDUSER, "Anmelden mit Befehl USER zuerst.");
     return;
   }
   /* These login calls never return if successful */
@@ -279,7 +288,7 @@ handle_pass_command(struct vsf_session* p_sess)
   {
     vsf_two_process_login(p_sess, &p_sess->ftp_arg_str);
   }
-  vsf_cmdio_write(p_sess, FTP_LOGINERR, "Login incorrect.");
+  vsf_cmdio_write(p_sess, FTP_LOGINERR, "Login ungueltig.");
   check_login_fails(p_sess);
   str_empty(&p_sess->user_str);
   /* FALLTHRU if login fails */
