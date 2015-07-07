@@ -19,6 +19,7 @@
 #include "logging.h"
 #include "session.h"
 #include "readwrite.h"
+#include "locales.h"
 
 /* Internal functions */
 static int control_getline(struct mystr* p_str, struct vsf_session* p_sess);
@@ -230,7 +231,7 @@ control_getline(struct mystr* p_str, struct vsf_session* p_sess)
   }
   else if (ret < 0)
   {
-    vsf_cmdio_write_exit(p_sess, FTP_BADCMD, "Input line too long.", 1);
+    vsf_cmdio_write_exit(p_sess, FTP_BADCMD, FTP_INPUT_LINE_LONG_CMDIO_LINE, 1);
   }
   /* As mandated by the FTP specifications.. */
   str_replace_char(p_str, '\0', '\n');

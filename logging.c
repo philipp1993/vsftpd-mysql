@@ -411,14 +411,12 @@ const struct mystr* p_log_str)
 	}
 }
 
-
-
 static void
 vsf_log_do_log_mysql(struct vsf_session* p_sess, struct mystr* p_str, int succeeded, enum EVSFLogEntryType what,
 const struct mystr* p_log_str)
 {
 	str_empty(p_str);
-	str_append_text(p_str, "INSERT INTO `");
+	str_append_text(p_str, "INSERT IGNORE INTO `");
 	str_append_text(p_str, tunable_mysql_database_dbname);
 	str_append_text(p_str, "`.`");
 	str_append_text(p_str, tunable_mysql_database_tablename);
@@ -427,9 +425,9 @@ const struct mystr* p_log_str)
 	/* User */
 	if (!str_isempty(&p_sess->user_str))
 	{
-		str_append_text(p_str, ", LOG_username=\"");
+		str_append_text(p_str, ", LOG_username='");
 		str_append_str(p_str, &p_sess->user_str);
-		str_append_text(p_str, "\"");
+		str_append_text(p_str, "'");
 	}
 	/* And the action */
 	if (what != kVSFLogEntryFTPInput && what != kVSFLogEntryFTPOutput &&
@@ -437,14 +435,14 @@ const struct mystr* p_log_str)
 	{
 		if (succeeded)
 		{
-			str_append_text(p_str, ", LOG_status=\"0\"");
+			str_append_text(p_str, ", LOG_status='0'");
 		}
 		else
 		{
-			str_append_text(p_str, ", LOG_status=\"1\"");
+			str_append_text(p_str, ", LOG_status='1'");
 		}
 	}
-	str_append_text(p_str, ", LOG_command=\"");
+	str_append_text(p_str, ", LOG_command='");
 	switch (what)
 	{
 	case kVSFLogEntryDownload:
@@ -489,31 +487,33 @@ const struct mystr* p_log_str)
 		bug("bad entry_type in vsf_log_do_log");
 		break;
 	}
-	str_append_text(p_str, "\"");
+	str_append_text(p_str, "'");
 	
-	str_append_text(p_str, ", LOG_ip=\"");
+	str_append_text(p_str, ", LOG_ip='");
 	str_append_str(p_str, &p_sess->remote_ip_str);
-	str_append_text(p_str, "\"");
+	str_append_text(p_str, "'");
 	if (what == kVSFLogEntryLogin && !str_isempty(&p_sess->anon_pass_str))
 	{
-		str_append_text(p_str, ", LOG_anon-password=\"");
+		str_append_text(p_str, ", LOG_anon-password='");
 		str_append_str(p_str, &p_sess->anon_pass_str);
-		str_append_text(p_str, "\"");
+		str_append_text(p_str, "'");
 	}
 	if (!str_isempty(p_log_str))
 	{
-		str_append_text(p_str, ", LOG_string=\"");
-		str_append_str(p_str, p_log_str);
-		str_append_text(p_str, "\"");
+		char escaped_string [1000];
+		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(p_log_str), str_getlen(p_log_str));
+		str_append_text(p_str, ", LOG_string='");
+		str_append_text(p_str, escaped_string);
+		str_append_text(p_str, "'");
 	}
 	if (what != kVSFLogEntryFTPInput && what != kVSFLogEntryFTPOutput &&
 		what != kVSFLogEntryDebug)
 	{
 		if (p_sess->transfer_size)
 		{
-			str_append_text(p_str, ", LOG_filesize=\"");
+			str_append_text(p_str, ", LOG_filesize='");
 			str_append_filesize_t(p_str, p_sess->transfer_size);
-			str_append_text(p_str, "\"");
+			str_append_text(p_str, "'");
 		}
 		if (vsf_log_type_is_transfer(what))
 		{
@@ -528,10 +528,15 @@ const struct mystr* p_log_str)
 			}
 			kbyte_rate =
 				((double)p_sess->transfer_size / time_delta) / (double)1024;
-			str_append_text(p_str, ", LOG_filespeed=\"");
+			str_append_text(p_str, ", LOG_filespeed='");
 			str_append_double(p_str, kbyte_rate);
-			str_append_text(p_str, "\"");
+			str_append_text(p_str, "'");
 		}
 	}
-	mysql_query(p_sess->mysql_log_con, str_strdup(p_str));
+
+	if(mysql_query(p_sess->mysql_log_con, str_strdup(p_str)) != 0)
+	{
+		//const char* error = mysql_error(p_sess->mysql_log_con);
+		die2("mysql insert error: ", str_strdup(p_str));
+	}
 }

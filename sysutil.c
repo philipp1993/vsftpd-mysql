@@ -2645,37 +2645,6 @@ vsf_sysutil_get_current_date(void)
   return datebuf;
 }
 
-/*const char*
-vsf_sysutil_get_current_date_mysql(void)
-{
-  static char datebuf[64];
-  time_t curr_time;
-  const struct tm* p_tm;
-  int i = 0;
-  curr_time = vsf_sysutil_get_time_sec();
-  p_tm = localtime(&curr_time);
-  if (strftime(datebuf, sizeof(datebuf), "%F %H:%M:%S", p_tm) == 0)
-  {
-    die("strftime");
-  }
-  datebuf[sizeof(datebuf) - 1] = '\0';
-  /* This hack is because %e in strftime() isn't so portable */
-  /*
-  while (datebuf[i] != '!' && datebuf[i] != '\0')
-  {
-    ++i;
-  }
-  if (datebuf[i] == '!')
-  {
-    datebuf[i] = ' ';
-    if (datebuf[i+1] == '0')
-    {
-      datebuf[i+1] = ' ';
-    }
-  }
-  return datebuf;
-}
-*/
 long
 vsf_sysutil_get_time_sec(void)
 {

@@ -11,11 +11,12 @@
 #include "ftpcodes.h"
 #include "ftpcmdio.h"
 #include "tunables.h"
+#include "locales.h"
 
 void
 handle_feat(struct vsf_session* p_sess)
 {
-  vsf_cmdio_write_hyphen(p_sess, FTP_FEAT, "Funktionen:");
+  vsf_cmdio_write_hyphen(p_sess, FTP_FEAT, FTP_FEATURES_STRING_CMDIO_LINE);
   if (tunable_ssl_enable)
   {
     if (tunable_sslv2 || tunable_sslv3)

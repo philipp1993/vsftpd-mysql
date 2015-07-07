@@ -276,6 +276,16 @@ separate vsftpd listener process should be run.
 
 Default: NO
 .TP
+.B isolate_network
+If enabled, use CLONE_NEWNET to isolate the untrusted processes so that they can't do arbitrary connect() and instead have to ask the privileged process for sockets ( port_promiscuous have to be disabled). 
+
+Default: YES
+.TP
+.B isolate
+If enabled, use CLONE_NEWPID and CLONE_NEWIPC to isolate processes to their ipc and pid namespaces. So separated processes can not interact with each other.
+
+Default: YES
+.TP
 .B listen
 If enabled, vsftpd will run in standalone mode. This means that vsftpd must
 not be run from an inetd of some kind. Instead, the vsftpd executable is
@@ -441,6 +451,11 @@ Make usage of the seccomp_sandbox. ONLY turn off if you have specific problems r
 "500 OOPS: priv_sock_get_cmd"
 
 Default: YES
+.TP
+.B ptrace_sandbox
+Make usage of the ptrace_sandbox. EXPERIMENTAL!
+
+Default: NO
 .TP
 .B secure_email_list_enable
 Set to YES if you want only a specified list of e-mail passwords for anonymous

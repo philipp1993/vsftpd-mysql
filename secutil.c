@@ -11,6 +11,7 @@
 #include "sysstr.h"
 #include "utility.h"
 #include "sysdeputil.h"
+#include "locales.h"
 
 void
 vsf_secutil_change_credentials(const struct mystr* p_user_str,
@@ -137,7 +138,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
   {
     if (vsf_sysutil_write_access("/"))
     {
-      die("chroot top beschreibar");
+      die(DIE_CHROOT_TOP_WRITEABLE);
     }
   }
 }

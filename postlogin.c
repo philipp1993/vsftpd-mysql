@@ -27,6 +27,7 @@
 #include "ssl.h"
 #include "vsftpver.h"
 #include "opts.h"
+#include "locales.h"
 
 /* Private local functions */
 static void handle_pwd(struct vsf_session* p_sess);
@@ -111,7 +112,7 @@ process_post_login(struct vsf_session* p_sess)
   }
   /* Handle any login message */
   vsf_banner_dir_changed(p_sess, FTP_LOGINOK);
-  vsf_cmdio_write(p_sess, FTP_LOGINOK, "Login erfolgreich.");
+  vsf_cmdio_write(p_sess, FTP_LOGINOK, FTP_LOGIN_VALID);
 
   while(1)
   {
@@ -180,11 +181,11 @@ process_post_login(struct vsf_session* p_sess)
     }
     if (!cmd_ok)
     {
-      vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+      vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "QUIT"))
     {
-      vsf_cmdio_write_exit(p_sess, FTP_GOODBYE, "Auf Wiedersehen.", 0);
+      vsf_cmdio_write_exit(p_sess, FTP_GOODBYE, FTP_GOODBYE_CMDIO_LINE, 0);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "PWD") ||
              str_equal_text(&p_sess->ftp_cmd_str, "XPWD"))
@@ -307,7 +308,7 @@ process_post_login(struct vsf_session* p_sess)
     else if (str_equal_text(&p_sess->ftp_cmd_str, "ABOR") ||
              str_equal_text(&p_sess->ftp_cmd_str, "\377\364\377\362ABOR"))
     {
-      vsf_cmdio_write(p_sess, FTP_ABOR_NOCONN, "Keine Uebertragung zum ABOR.");
+      vsf_cmdio_write(p_sess, FTP_ABOR_NOCONN, FTP_NOTHING_TO_ABOR);
     }
     else if (tunable_write_enable &&
              (tunable_anon_other_write_enable || !p_sess->is_anonymous) &&
@@ -329,11 +330,11 @@ process_post_login(struct vsf_session* p_sess)
       str_upper(&p_sess->ftp_arg_str);
       if (str_equal_text(&p_sess->ftp_arg_str, "F"))
       {
-        vsf_cmdio_write(p_sess, FTP_STRUOK, "Struktur eingestellt auf F.");
+        vsf_cmdio_write(p_sess, FTP_STRUOK, FTP_STRUOK_CMDIO_LINE);
       }
       else
       {
-        vsf_cmdio_write(p_sess, FTP_BADSTRU, "Falscher STRU Befehl.");
+        vsf_cmdio_write(p_sess, FTP_BADSTRU, FTP_BAD_STRU_CMDIO_LINE);
       }
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "MODE"))
@@ -341,11 +342,11 @@ process_post_login(struct vsf_session* p_sess)
       str_upper(&p_sess->ftp_arg_str);
       if (str_equal_text(&p_sess->ftp_arg_str, "S"))
       {
-        vsf_cmdio_write(p_sess, FTP_MODEOK, "Modus eingestellt auf S.");
+        vsf_cmdio_write(p_sess, FTP_MODEOK, FTP_MODE_OK_CMDIO_LINE);
       }
       else
       {
-        vsf_cmdio_write(p_sess, FTP_BADMODE, "Falscher MODE Befehl.");
+        vsf_cmdio_write(p_sess, FTP_BADMODE, FTP_MODE_BAD_CMDIO_LINE);
       }
     }
     else if (tunable_write_enable &&
@@ -356,19 +357,19 @@ process_post_login(struct vsf_session* p_sess)
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "ALLO"))
     {
-      vsf_cmdio_write(p_sess, FTP_ALLOOK, "ALLO Befehl ignoriert.");
+      vsf_cmdio_write(p_sess, FTP_ALLOOK, FTP_ALLO_CMDIO_LINE);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "REIN"))
     {
-      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, "REIN nicht unterstuetzt.");
+      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, FTP_REIN_CMDIO_LINE);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "ACCT"))
     {
-      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, "ACCT nicht unterstuetzt.");
+      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, FTP_ACCT_CMDIO_LINE);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "SMNT"))
     {
-      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, "SMNT nicht unterstuetzt.");
+      vsf_cmdio_write(p_sess, FTP_COMMANDNOTIMPL, FTP_SMNT_CMDIO_LINE);
     }
     else if (str_equal_text(&p_sess->ftp_cmd_str, "FEAT"))
     {
@@ -432,7 +433,7 @@ process_post_login(struct vsf_session* p_sess)
              str_equal_text(&p_sess->ftp_cmd_str, "PBSZ") ||
              str_equal_text(&p_sess->ftp_cmd_str, "PROT"))
     {
-      vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+      vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     }
     else if (str_isempty(&p_sess->ftp_cmd_str) &&
              str_isempty(&p_sess->ftp_arg_str))
@@ -441,7 +442,7 @@ process_post_login(struct vsf_session* p_sess)
     }
     else
     {
-      vsf_cmdio_write(p_sess, FTP_BADCMD, "Unbekannter Befehl.");
+      vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_COMMAND);
     }
     if (vsf_log_entry_pending(p_sess))
     {
@@ -450,7 +451,7 @@ process_post_login(struct vsf_session* p_sess)
     if (p_sess->data_timeout)
     {
       vsf_cmdio_write_exit(p_sess, FTP_DATA_TIMEOUT,
-                           "Daten Timeout. Wiederverbinden. Sorry.", 1);
+                           FTP_DATA_TIMEOUT_CMDIO_LINE, 1);
     }
   }
 }
@@ -477,7 +478,7 @@ handle_cwd(struct vsf_session* p_sess)
   resolve_tilde(&p_sess->ftp_arg_str, p_sess);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   retval = str_chdir(&p_sess->ftp_arg_str);
@@ -485,11 +486,11 @@ handle_cwd(struct vsf_session* p_sess)
   {
     /* Handle any messages */
     vsf_banner_dir_changed(p_sess, FTP_CWDOK);
-    vsf_cmdio_write(p_sess, FTP_CWDOK, "Verzeichniswechsel erfolgreich.");
+    vsf_cmdio_write(p_sess, FTP_CWDOK, FTP_CHANGE_DIR_OK_CMDIO_LINE);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Verzeichniswechsel FEHLGESCHLAGEN .");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_CHANGE_DIR_FAIL_CMDIO_LINE);
   }
 }
 
@@ -576,7 +577,7 @@ handle_pasv(struct vsf_session* p_sess, int is_epsv)
     argval = vsf_sysutil_atoi(str_getbuf(&p_sess->ftp_arg_str));
     if (argval < 1 || argval > 2 || (!is_ipv6 && argval == 2))
     {
-      vsf_cmdio_write(p_sess, FTP_EPSVBAD, "Falsches Netzwerkprotokoll.");
+      vsf_cmdio_write(p_sess, FTP_EPSVBAD, FTP_BAD_EPS_CMDIO_LINE);
       return;
     }
   }
@@ -592,7 +593,7 @@ handle_pasv(struct vsf_session* p_sess, int is_epsv)
   }
   if (is_epsv)
   {
-    str_alloc_text(&s_pasv_res_str, "Starte erweiterten passiven Modus (|||");
+    str_alloc_text(&s_pasv_res_str, FTP_START_PASS_EX_CMDIO_LINE);
     str_append_ulong(&s_pasv_res_str, (unsigned long) the_port);
     str_append_text(&s_pasv_res_str, "|).");
     vsf_cmdio_write_str(p_sess, FTP_EPSVOK, &s_pasv_res_str);
@@ -611,7 +612,7 @@ handle_pasv(struct vsf_session* p_sess, int is_epsv)
   {
     vsf_sysutil_sockaddr_clone(&s_p_sockaddr, p_sess->p_local_addr);
   }
-  str_alloc_text(&s_pasv_res_str, "Starte Passive Modus (");
+  str_alloc_text(&s_pasv_res_str, FTP_START_PASS_CMDIO_LINE);
   if (!is_ipv6)
   {
     str_append_text(&s_pasv_res_str, vsf_sysutil_inet_ntop(s_p_sockaddr));
@@ -655,7 +656,7 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   if (p_sess->is_ascii && offset != 0)
   {
     vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                    "Kein Support fuer das Wiederaufnehmen von ASCII Uebertragungen.");
+                    FTP_NO_ASCII_RETURN);
     return;
   }
   resolve_tilde(&p_sess->ftp_arg_str, p_sess);
@@ -664,13 +665,13 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   prepend_path_to_filename(&p_sess->log_str);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   opened_file = str_open(&p_sess->ftp_arg_str, kVSFSysStrOpenReadOnly);
   if (vsf_sysutil_retval_is_error(opened_file))
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Konnte Datei nicht oeffnen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_OPEN_FILE_FAIL_CMDIO_LINE);
     return;
   }
   /* Lock file if required */
@@ -683,7 +684,7 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   if (!vsf_sysutil_statbuf_is_regfile(s_p_statbuf))
   {
     /* Note - pretend open failed */
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Konnte Datei nicht oeffnen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_OPEN_FILE_FAIL_CMDIO_LINE);
     /* Irritating FireFox does RETR on directories, so avoid logging this
      * very common and noisy case.
      */
@@ -701,7 +702,7 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   if (p_sess->is_anonymous && tunable_anon_world_readable_only &&
       !vsf_sysutil_statbuf_is_readable_other(s_p_statbuf))
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Konnte Datei nicht oeffnen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_OPEN_FILE_FAIL_CMDIO_LINE);
     goto file_close_out;
   }
   /* Set the download offset (from REST) if any */
@@ -709,7 +710,7 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   {
     vsf_sysutil_lseek_to(opened_file, offset);
   }
-  str_alloc_text(&s_mark_str, "Oeffne ");
+  str_alloc_text(&s_mark_str, FTP_STRING_OPEN);
   if (tunable_ascii_download_enable && p_sess->is_ascii)
   {
     str_append_text(&s_mark_str, "ASCII");
@@ -719,7 +720,7 @@ handle_retr(struct vsf_session* p_sess, int is_http)
   {
     str_append_text(&s_mark_str, "BINARY");
   }
-  str_append_text(&s_mark_str, " Modus Datenuebertragung fuer ");
+  str_append_text(&s_mark_str, FTP_MODE_FOR_FILE_CMDIO_LINE);
   str_append_str(&s_mark_str, &p_sess->ftp_arg_str);
   str_append_text(&s_mark_str, " (");
   str_append_filesize_t(&s_mark_str,
@@ -760,19 +761,19 @@ handle_retr(struct vsf_session* p_sess, int is_http)
    */
   if (trans_ret.retval == -1)
   {
-    vsf_cmdio_write(p_sess, FTP_BADSENDFILE, "Fehler beim Lesen von lokaler Datei.");
+    vsf_cmdio_write(p_sess, FTP_BADSENDFILE, FTP_BAD_LOCAL_FILE_CMDIO_LINE);
   }
   else if (trans_ret.retval == -2)
   {
     if (!p_sess->data_timeout)
     {
       vsf_cmdio_write(p_sess, FTP_BADSENDNET,
-                      "Fehler beim Schreiben auf das Netzwerk.");
+                      FTP_BAD_NETWORK_WRITE_CMDIO_LINE);
     }
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, "Uebertragung komplett.");
+    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, FTP_TRANSFER_OK_CMDIO_LINE);
   }
   check_abor(p_sess);
 port_pasv_cleanup_out:
@@ -828,7 +829,7 @@ handle_dir_common(struct vsf_session* p_sess, int full_details, int stat_cmd)
     resolve_tilde(&s_filter_str, p_sess);
     if (!vsf_access_check_file(&s_filter_str))
     {
-      vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+      vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
       return;
     }
     /* First check - is it an outright directory, as in "ls /pub" */
@@ -870,12 +871,12 @@ handle_dir_common(struct vsf_session* p_sess, int full_details, int stat_cmd)
   {
     use_control = 1;
     str_append_char(&s_option_str, 'a');
-    vsf_cmdio_write_hyphen(p_sess, FTP_STATFILE_OK, "Status folgt:");
+    vsf_cmdio_write_hyphen(p_sess, FTP_STATFILE_OK, FTP_GIVE_STATUS_CMDIO_LINE);
   }
   else
   {
     int remote_fd = get_remote_transfer_fd(
-      p_sess, "Verzeichnisinhalt wird aufgelistet...");
+      p_sess, FTP_DIRLISTING_ANNOUNCEMENT_CMDIO_LINE);
     if (vsf_sysutil_retval_is_error(remote_fd))
     {
       goto dir_close_out;
@@ -904,24 +905,24 @@ handle_dir_common(struct vsf_session* p_sess, int full_details, int stat_cmd)
   }
   if (stat_cmd)
   {
-    vsf_cmdio_write(p_sess, FTP_STATFILE_OK, "Ende des Status");
+    vsf_cmdio_write(p_sess, FTP_STATFILE_OK, FTP_END_STATUS_CMDIO_LINE);
   }
   else if (retval != 0)
   {
     if (!p_sess->data_timeout)
     {
       vsf_cmdio_write(p_sess, FTP_BADSENDNET,
-                      "Fehler beim Schreiben auf das Netzwerk.");
+                      FTP_BAD_NETWORK_WRITE_CMDIO_LINE);
     }
   }
   else if (p_dir == 0 || !dir_allow_read)
   {
     vsf_cmdio_write(p_sess, FTP_TRANSFEROK,
-                    "Uebertragung erfolgreich (aber konnte Verzeichnis nicht oeffnen).");
+                    FTP_TRANSFER_OK_NO_DIR);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, "Verzeichnisinhalt gesendet.");
+    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, FTP_DIRLISTING_OK);
   }
   check_abor(p_sess);
 dir_close_out:
@@ -945,17 +946,17 @@ handle_type(struct vsf_session* p_sess)
       str_equal_text(&p_sess->ftp_arg_str, "L 8"))
   {
     p_sess->is_ascii = 0;
-    vsf_cmdio_write(p_sess, FTP_TYPEOK, "Wechsel in den Binary Modus.");
+    vsf_cmdio_write(p_sess, FTP_TYPEOK, FTP_CHANGE_TO_BINARY);
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "A") ||
            str_equal_text(&p_sess->ftp_arg_str, "A N"))
   {
     p_sess->is_ascii = 1;
-    vsf_cmdio_write(p_sess, FTP_TYPEOK, "Wechsel in den  ASCII Modus.");
+    vsf_cmdio_write(p_sess, FTP_TYPEOK, FTP_CHANGE_TO_ASCII);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "Unbekannter TYPE Befehl.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_UNKNOWN_TYPE);
   }
 }
 
@@ -971,7 +972,7 @@ handle_port(struct vsf_session* p_sess)
                                              sizeof(vals));
   if (p_raw == 0)
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "Ungueltiger PORT Befehl.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_PORT_FAIL_CMDIO_LINE);
     return;
   }
   the_port = (unsigned short) ((vals[4] << 8) | vals[5]);
@@ -988,13 +989,13 @@ handle_port(struct vsf_session* p_sess)
                                          p_sess->p_port_sockaddr) ||
         vsf_sysutil_is_port_reserved(the_port))
     {
-      vsf_cmdio_write(p_sess, FTP_BADCMD, "Ungueltiger PORT Befehl.");
+      vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_PORT_FAIL_CMDIO_LINE);
       port_cleanup(p_sess);
       return;
     }
   }
   vsf_cmdio_write(p_sess, FTP_PORTOK,
-                  "PORT Befehl erfolgreich. Benutze besser PASV.");
+                  FTP_PORT_OK_PASV_INFO);
 }
 
 static void
@@ -1033,7 +1034,7 @@ handle_upload_common(struct vsf_session* p_sess, int is_append, int is_unique)
   prepend_path_to_filename(&p_sess->log_str);
   if (!vsf_access_check_file(p_filename))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   /* NOTE - actual file permissions will be governed by the tunable umask */
@@ -1055,7 +1056,7 @@ handle_upload_common(struct vsf_session* p_sess, int is_append, int is_unique)
   }
   if (vsf_sysutil_retval_is_error(new_file_fd))
   {
-    vsf_cmdio_write(p_sess, FTP_UPLOADFAIL, "Konnte Datei nicht erstellen.");
+    vsf_cmdio_write(p_sess, FTP_UPLOADFAIL, FTP_UPLOAD_FAIL_NO_FILE_CREATE);
     return;
   }
   created = 1;
@@ -1103,14 +1104,14 @@ handle_upload_common(struct vsf_session* p_sess, int is_append, int is_unique)
   if (is_unique)
   {
     struct mystr resp_str = INIT_MYSTR;
-    str_alloc_text(&resp_str, "DATEI: ");
+    str_alloc_text(&resp_str, FTP_FILE_CMDIO_LINE);
     str_append_str(&resp_str, p_filename);
     remote_fd = get_remote_transfer_fd(p_sess, str_getbuf(&resp_str));
     str_free(&resp_str);
   }
   else
   {
-    remote_fd = get_remote_transfer_fd(p_sess, "Ok zum Senden von Daten.");
+    remote_fd = get_remote_transfer_fd(p_sess, FTP_READY_TO_SEND_CMDIO_LINE);
   }
   if (vsf_sysutil_retval_is_error(remote_fd))
   {
@@ -1138,19 +1139,19 @@ handle_upload_common(struct vsf_session* p_sess, int is_append, int is_unique)
   }
   if (trans_ret.retval == -1)
   {
-    vsf_cmdio_write(p_sess, FTP_BADSENDFILE, "Fehler beim Schreiben der lokalen Datei.");
+    vsf_cmdio_write(p_sess, FTP_BADSENDFILE, FTP_BAD_LOCAL_FILE_WRITE_CMDIO_LINE);
   }
   else if (trans_ret.retval == -2)
   {
     if (!p_sess->data_timeout)
     {
       vsf_cmdio_write(p_sess, FTP_BADSENDNET,
-                      "Fehler beim Lesen vom Netzwerk.");
+                      FTP_BAD_NETWORK_READ_CMDIO_LINE);
     }
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, "Uebertragung komplett.");
+    vsf_cmdio_write(p_sess, FTP_TRANSFEROK, FTP_TRANSFER_OK_CMDIO_LINE);
   }
   check_abor(p_sess);
 port_pasv_cleanup_out:
@@ -1173,7 +1174,7 @@ handle_mkd(struct vsf_session* p_sess)
   prepend_path_to_filename(&p_sess->log_str);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   /* NOTE! Actual permissions will be governed by the tunable umask */
@@ -1181,7 +1182,7 @@ handle_mkd(struct vsf_session* p_sess)
   if (retval != 0)
   {
     vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                    "Verzeichnis erstellen fehlgeschlagen.");
+                    FTP_BAD_MKDIR_CMDIO_LINE);
     return;
   }
   vsf_log_do_log(p_sess, 1);
@@ -1195,7 +1196,7 @@ handle_mkd(struct vsf_session* p_sess)
     /* Build result string */
     str_alloc_text(&s_mkd_res, "\"");
     str_append_str(&s_mkd_res, &s_tmp_str);
-    str_append_text(&s_mkd_res, "\" erstellt");
+    str_append_text(&s_mkd_res, FTP_CREATED_CMDIO_LINE);
     vsf_cmdio_write_str(p_sess, FTP_MKDIROK, &s_mkd_res);
   }
 }
@@ -1210,20 +1211,20 @@ handle_rmd(struct vsf_session* p_sess)
   prepend_path_to_filename(&p_sess->log_str);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   retval = str_rmdir(&p_sess->ftp_arg_str);
   if (retval != 0)
   {
     vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                    "Verzeichnis entfernen fehlgeschlagen.");
+                   FTP_BAD_RMDIR_CMDIO_LINE );
   }
   else
   {
     vsf_log_do_log(p_sess, 1);
     vsf_cmdio_write(p_sess, FTP_RMDIROK,
-                    "Verzeichnis entfernen erfolgreich.");
+                    FTP_OK_RMDIR_CMDIO_LINE);
   }
 }
 
@@ -1237,18 +1238,18 @@ handle_dele(struct vsf_session* p_sess)
   prepend_path_to_filename(&p_sess->log_str);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   retval = str_unlink(&p_sess->ftp_arg_str);
   if (retval != 0)
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Entfernen fehlgeschlagen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_BAD_RM_CMDIO_LINE);
   }
   else
   {
     vsf_log_do_log(p_sess, 1);
-    vsf_cmdio_write(p_sess, FTP_DELEOK, "Entfernen erfolgreich.");
+    vsf_cmdio_write(p_sess, FTP_DELEOK, FTP_OK_RM_CMDIO_LINE);
   }
 }
 
@@ -1262,7 +1263,7 @@ handle_rest(struct vsf_session* p_sess)
     val = 0;
   }
   p_sess->restart_pos = val;
-  str_alloc_text(&s_rest_str, "Neustart Position akzeptiert (");
+  str_alloc_text(&s_rest_str, FTP_RESTART_POS_OK_CMDIO_LINE);
   str_append_filesize_t(&s_rest_str, val);
   str_append_text(&s_rest_str, ").");
   vsf_cmdio_write_str(p_sess, FTP_RESTOK, &s_rest_str);
@@ -1281,7 +1282,7 @@ handle_rnfr(struct vsf_session* p_sess)
     vsf_log_start_entry(p_sess, kVSFLogEntryRename);
     str_copy(&p_sess->log_str, &p_sess->ftp_arg_str);
     prepend_path_to_filename(&p_sess->log_str);
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   /* Does it exist? */
@@ -1290,14 +1291,14 @@ handle_rnfr(struct vsf_session* p_sess)
   {
     /* Yes */
     str_copy(&p_sess->rnfr_filename_str, &p_sess->ftp_arg_str);
-    vsf_cmdio_write(p_sess, FTP_RNFROK, "Bereit fuer RNTO.");
+    vsf_cmdio_write(p_sess, FTP_RNFROK, FTP_READY_FOR_RNTO_CMDIO_LINE);
   }
   else
   {
     vsf_log_start_entry(p_sess, kVSFLogEntryRename);
     str_copy(&p_sess->log_str, &p_sess->ftp_arg_str);
     prepend_path_to_filename(&p_sess->log_str);
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "RNFR Befehl fehlgeschlagen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_BAD_RNFR_CMDIO_LINE);
   }
 }
 
@@ -1310,7 +1311,7 @@ handle_rnto(struct vsf_session* p_sess)
   if (str_isempty(&p_sess->rnfr_filename_str))
   {
     vsf_cmdio_write(p_sess, FTP_NEEDRNFR,
-                    "RNFR zuerst erforderlich.");
+                    FTP_RNFR_FIRST_CMDIO_LINE);
     return;
   }
   resolve_tilde(&p_sess->ftp_arg_str, p_sess);
@@ -1323,7 +1324,7 @@ handle_rnto(struct vsf_session* p_sess)
   str_append_str(&p_sess->log_str, &s_tmp_str);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   /* NOTE - might overwrite destination file. Not a concern because the same
@@ -1335,11 +1336,11 @@ handle_rnto(struct vsf_session* p_sess)
   if (retval == 0)
   {
     vsf_log_do_log(p_sess, 1);
-    vsf_cmdio_write(p_sess, FTP_RENAMEOK, "Umbenennen erfolgreich.");
+    vsf_cmdio_write(p_sess, FTP_RENAMEOK, FTP_OK_RENAME_CMDIO_LINE);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Umbenennen fehlgeschlagen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_FAIL_RENAME_CMDIO_LINE);
   }
 }
 
@@ -1408,7 +1409,7 @@ handle_sigurg(void* p_private)
   else
   {
     /* Sorry! */
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "Unbekannter Befehl.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_COMMAND);
   }
   str_free(&async_cmd_str);
   str_free(&async_arg_str);
@@ -1452,7 +1453,7 @@ check_abor(struct vsf_session* p_sess)
   if (p_sess->abor_received)
   {
     p_sess->abor_received = 0;
-    vsf_cmdio_write(p_sess, FTP_ABOROK, "ABOR erfolgreich.");
+    vsf_cmdio_write(p_sess, FTP_ABOROK, FTP_OK_ABOR_CMDIO_LINE);
   }
 }
 
@@ -1469,13 +1470,13 @@ handle_size(struct vsf_session* p_sess)
   resolve_tilde(&p_sess->ftp_arg_str, p_sess);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   retval = str_stat(&p_sess->ftp_arg_str, &s_p_statbuf);
   if (retval != 0 || !vsf_sysutil_statbuf_is_regfile(s_p_statbuf))
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "Konnte Dateigroesse nicht bestimmen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_BAD_FILESTAT_CMDIO_LINE);
   }
   else
   {
@@ -1508,16 +1509,16 @@ handle_site(struct vsf_session* p_sess)
     if (tunable_write_enable &&
         tunable_chmod_enable)
     {
-      vsf_cmdio_write(p_sess, FTP_SITEHELP, "CHMOD UMASK HILFE");
+      vsf_cmdio_write(p_sess, FTP_SITEHELP, FTP_SITE_HELP_CHMOD_UMASK);
     }
     else
     {
-      vsf_cmdio_write(p_sess, FTP_SITEHELP, "UMASK HILFE");
+      vsf_cmdio_write(p_sess, FTP_SITEHELP, FTP_SITE_HELP_UMASK);
     }
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "Unbekannter SITE Befehl.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_SITE_COMMAND_CMDIO_LINE);
   }
 }
 
@@ -1529,13 +1530,13 @@ handle_site_chmod(struct vsf_session* p_sess, struct mystr* p_arg_str)
   int retval;
   if (str_isempty(p_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "SITE CHMOD benoetigt 2 Argumente.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_SITE_CHMOD_CMDIO_LINE);
     return;
   }
   str_split_char(p_arg_str, &s_chmod_file_str, ' ');
   if (str_isempty(&s_chmod_file_str))
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "SITE CHMOD benoetigt 2 Argumente.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_SITE_CHMOD_CMDIO_LINE);
     return;
   }
   resolve_tilde(&s_chmod_file_str, p_sess);
@@ -1546,7 +1547,7 @@ handle_site_chmod(struct vsf_session* p_sess, struct mystr* p_arg_str)
   str_append_str(&p_sess->log_str, p_arg_str);
   if (!vsf_access_check_file(&s_chmod_file_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   /* Don't worry - our chmod() implementation only allows 0 - 0777 */
@@ -1554,12 +1555,12 @@ handle_site_chmod(struct vsf_session* p_sess, struct mystr* p_arg_str)
   retval = str_chmod(&s_chmod_file_str, perms);
   if (vsf_sysutil_retval_is_error(retval))
   {
-    vsf_cmdio_write(p_sess, FTP_FILEFAIL, "SITE CHMOD Befehl fehlgeschlagen.");
+    vsf_cmdio_write(p_sess, FTP_FILEFAIL, FTP_FAIL_SITE_CHMOD_CMDIO_LINE);
   }
   else
   {
     vsf_log_do_log(p_sess, 1);
-    vsf_cmdio_write(p_sess, FTP_CHMODOK, "SITE CHMOD Befehl ok.");
+    vsf_cmdio_write(p_sess, FTP_CHMODOK, FTP_OK_SITE_CHMOD_CMDIO_LINE);
   }
 }
 
@@ -1570,7 +1571,7 @@ handle_site_umask(struct vsf_session* p_sess, struct mystr* p_arg_str)
   if (str_isempty(p_arg_str))
   {
     /* Empty arg => report current umask */
-    str_alloc_text(&s_umask_resp_str, "Ihre aktuelle UMASK ist ");
+    str_alloc_text(&s_umask_resp_str, FTP_OK_UMASK_READ_CMDIO_LINE);
     str_append_text(&s_umask_resp_str,
                     vsf_sysutil_uint_to_octal(vsf_sysutil_get_umask()));
   }
@@ -1579,7 +1580,7 @@ handle_site_umask(struct vsf_session* p_sess, struct mystr* p_arg_str)
     /* Set current umask */
     unsigned int new_umask = str_octal_to_uint(p_arg_str);
     vsf_sysutil_set_umask(new_umask);
-    str_alloc_text(&s_umask_resp_str, "UMASK gesetzt auf ");
+    str_alloc_text(&s_umask_resp_str, FTP_OK_UMASK_WRITE_CMDIO_LINE);
     str_append_text(&s_umask_resp_str,
                     vsf_sysutil_uint_to_octal(vsf_sysutil_get_umask()));
   }
@@ -1619,7 +1620,7 @@ handle_mdtm(struct vsf_session* p_sess)
   resolve_tilde(&p_sess->ftp_arg_str, p_sess);
   if (!vsf_access_check_file(&p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_NOPERM, "ZUGRIFF VERWEIGERT!");
+    vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
   }
   if (do_write && tunable_write_enable &&
@@ -1629,7 +1630,7 @@ handle_mdtm(struct vsf_session* p_sess)
     if (retval != 0 || !vsf_sysutil_statbuf_is_regfile(s_p_statbuf))
     {
       vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                      "Konnte Aenderungszeitpunkt der Datei nicht setzen.");
+                      FTP_FAIL_SET_CTIME_CMDIO_LINE);
     }
     else
     {
@@ -1638,12 +1639,12 @@ handle_mdtm(struct vsf_session* p_sess)
       if (retval != 0)
       {
         vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                        "Konnte Aenderungszeitpunkt der Datei nicht setzen.");
+                        FTP_FAIL_SET_CTIME_CMDIO_LINE);
       }
       else
       {
         vsf_cmdio_write(p_sess, FTP_MDTMOK,
-                        "Aenderungszeitpunkt der Datei gesetzt.");
+                        FTP_OK_SET_CTIME_CMDIO_LINE);
       }
     }
   }
@@ -1652,7 +1653,7 @@ handle_mdtm(struct vsf_session* p_sess)
     if (retval != 0 || !vsf_sysutil_statbuf_is_regfile(s_p_statbuf))
     {
       vsf_cmdio_write(p_sess, FTP_FILEFAIL,
-                      "Konnte Aenderungszeitpunkt der Datei nicht lesen.");
+                      FTP_FAIL_READ_CTIME_CMDIO_LINE);
     }
     else
     {
@@ -1688,7 +1689,7 @@ handle_eprt(struct vsf_session* p_sess)
   proto = str_atoi(&s_part2_str);
   if (proto < 1 || proto > 2 || (!is_ipv6 && proto == 2))
   {
-    vsf_cmdio_write(p_sess, FTP_BADCMD, "Falsches EPRT Protokoll.");
+    vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_EPRT_CMDIO_LINE);
     return;
   }
   /* Split out address and parse it */
@@ -1737,16 +1738,16 @@ handle_eprt(struct vsf_session* p_sess)
                                          p_sess->p_port_sockaddr) ||
         vsf_sysutil_is_port_reserved((unsigned short) port))
     {
-      vsf_cmdio_write(p_sess, FTP_BADCMD, "Ungueltiger EPRT Befehl.");
+      vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_EPRT_COMMAND_CMDIO_LINE);
       port_cleanup(p_sess);
       return;
     }
   }
   vsf_cmdio_write(p_sess, FTP_EPRTOK,
-                  "EPRT Befehl erfolgreich. Benutze besser EPSV.");
+                  FTP_OK_EPRT_COMMAND_CMDIO_LINE);
   return;
 bad_eprt:
-  vsf_cmdio_write(p_sess, FTP_BADCMD, "Ungueltiger EPRT Befehl.");
+  vsf_cmdio_write(p_sess, FTP_BADCMD, FTP_BAD_EPRT_COMMAND_CMDIO_LINE);
 }
 
 /* XXX - add AUTH etc. */
@@ -1754,7 +1755,7 @@ static void
 handle_help(struct vsf_session* p_sess)
 {
   vsf_cmdio_write_hyphen(p_sess, FTP_HELP,
-                         "Die folgenden Befehle werde unterstuetzt.");
+                         FTP_HELP_HEADER_CMDIO_LINE);
   vsf_cmdio_write_raw(p_sess,
 " ABOR ACCT ALLO APPE CDUP CWD  DELE EPRT EPSV FEAT HELP LIST MDTM MKD\r\n");
   vsf_cmdio_write_raw(p_sess,
@@ -1763,7 +1764,7 @@ handle_help(struct vsf_session* p_sess)
 " RNTO SITE SIZE SMNT STAT STOR STOU STRU SYST TYPE USER XCUP XCWD XMKD\r\n");
   vsf_cmdio_write_raw(p_sess,
 " XPWD XRMD\r\n");
-  vsf_cmdio_write(p_sess, FTP_HELP, "Hilfe OK.");
+  vsf_cmdio_write(p_sess, FTP_HELP, FTP_HELP_OK_CMDIO_LINE);
 }
 
 static void
@@ -1815,14 +1816,14 @@ get_unique_filename(struct mystr* p_outstr, const struct mystr* p_base_str)
 static void
 handle_stat(struct vsf_session* p_sess)
 {
-  vsf_cmdio_write_hyphen(p_sess, FTP_STATOK, "FTP Server Status:");
-  vsf_cmdio_write_raw(p_sess, "     verbunden mit ");
+  vsf_cmdio_write_hyphen(p_sess, FTP_STATOK, FTP_SRV_STATUS_CMDIO_LINE);
+  vsf_cmdio_write_raw(p_sess, FTP_SRV_CONNECTED_CMDIO_LINE);
   vsf_cmdio_write_raw(p_sess, str_getbuf(&p_sess->remote_ip_str));
   vsf_cmdio_write_raw(p_sess, "\r\n");
-  vsf_cmdio_write_raw(p_sess, "     angemeldet als ");
+  vsf_cmdio_write_raw(p_sess, FTP_SRV_LOGGED_IN_AS_CMDIO_LINE);
   vsf_cmdio_write_raw(p_sess, str_getbuf(&p_sess->user_str));
   vsf_cmdio_write_raw(p_sess, "\r\n");
-  vsf_cmdio_write_raw(p_sess, "     MODUS: ");
+  vsf_cmdio_write_raw(p_sess, FTP_SRV_MODE_CMDIO_LINE);
   if (p_sess->is_ascii)
   {
     vsf_cmdio_write_raw(p_sess, "ASCII\r\n");
@@ -1833,50 +1834,50 @@ handle_stat(struct vsf_session* p_sess)
   }
   if (p_sess->bw_rate_max == 0)
   {
-    vsf_cmdio_write_raw(p_sess, "     Kein Geschwindigkeitslimit\r\n");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_SPEEDLIMIT_WITHOUT_CMDIO_LINE);
   }
   else
   {
-    vsf_cmdio_write_raw(p_sess, "     Geschwindigkeitslimit in byte/s ist ");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_SPEEDLIMIT_LIMIT_CMDIO_LINE);
     vsf_cmdio_write_raw(p_sess, vsf_sysutil_ulong_to_str(p_sess->bw_rate_max));
     vsf_cmdio_write_raw(p_sess, "\r\n");
   }
   if (tunable_idle_session_timeout == 0)
   {
-    vsf_cmdio_write_raw(p_sess, "     Kein Timeout\r\n");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_TIMEOUT_NO_CMDIO_LINE);
   }
   else
   {
-    vsf_cmdio_write_raw(p_sess, "     Timeout in Sekunden ist ");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_TIMEOUT_YES_CMDIO_LINE);
     vsf_cmdio_write_raw(p_sess,
       vsf_sysutil_ulong_to_str(tunable_idle_session_timeout));
     vsf_cmdio_write_raw(p_sess, "\r\n");
   }
   if (p_sess->control_use_ssl)
   {
-    vsf_cmdio_write_raw(p_sess, "     Befehl Verbindung ist verschluesselt\r\n"); 
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_COMMAND_IS_CRYPT); 
   }
   else
   {
-    vsf_cmdio_write_raw(p_sess, "     Befehl Verbindung ist unverschluesselt\r\n"); 
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_COMMAND_NO_CRYPT); 
   }
   if (p_sess->data_use_ssl)
   {
-    vsf_cmdio_write_raw(p_sess, "     Datenubertragung wird verschluesselt\r\n"); 
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_DATA_IS_CRYPT); 
   }
   else
   {
-    vsf_cmdio_write_raw(p_sess, "     Datenubertragung wird NICHT verschluesselt\r\n");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_DATA_NO_CRYPT);
   }
   if (p_sess->num_clients > 0)
   {
-    vsf_cmdio_write_raw(p_sess, "     Beim Verbindungsaufbau waren ");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_LOGGEND_ON_WHILE_LOGIN);
     vsf_cmdio_write_raw(p_sess, vsf_sysutil_ulong_to_str(p_sess->num_clients));
-    vsf_cmdio_write_raw(p_sess, " Benutzer verbunden\r\n");
+    vsf_cmdio_write_raw(p_sess, FTP_SHOW_LOGGEND_ON_WHILE_LOGIN2);
   }
   vsf_cmdio_write_raw(p_sess,
-    "     vsFTPd " VSF_VERSION " - sicher, schnell, stabil\r\n");
-  vsf_cmdio_write(p_sess, FTP_STATOK, "Ende des Status");
+    "     vsFTPd " VSF_VERSION FTP_VSFTPD_TAIL);
+  vsf_cmdio_write(p_sess, FTP_STATOK, FTP_SHOW_END_OF_STATUS);
 }
 
 static void
@@ -1890,7 +1891,7 @@ data_transfer_checks_ok(struct vsf_session* p_sess)
 {
   if (!pasv_active(p_sess) && !port_active(p_sess))
   {
-    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, "Benutze PORT oder PASV zuerst.");
+    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, FTP_USE_FIRST_CMDIO_LINE);
     return 0;
   }
   if (tunable_ssl_enable && !p_sess->data_use_ssl &&
@@ -1942,21 +1943,21 @@ static void handle_logged_in_user(struct vsf_session* p_sess)
 {
   if (p_sess->is_anonymous)
   {
-    vsf_cmdio_write(p_sess, FTP_LOGINERR, "Kein Wechsel vom Gast Benutzer moeglich.");
+    vsf_cmdio_write(p_sess, FTP_LOGINERR, FTP_NO_CHANGE_FROM_GUEST);
   }
   else if (str_equal(&p_sess->user_str, &p_sess->ftp_arg_str))
   {
-    vsf_cmdio_write(p_sess, FTP_GIVEPWORD, "Jedes beliebige Passwort ist ok.");
+    vsf_cmdio_write(p_sess, FTP_GIVEPWORD, FTP_GIVE_ANY_PW);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_LOGINERR, "Kann Benutzer nicht wechseln.");
+    vsf_cmdio_write(p_sess, FTP_LOGINERR, FTP_COULD_NOT_CHANGE_USER);
   }
 }
 
 static void handle_logged_in_pass(struct vsf_session* p_sess)
 {
-  vsf_cmdio_write(p_sess, FTP_LOGINOK, "Schon angemeldet.");
+  vsf_cmdio_write(p_sess, FTP_LOGINOK, FTP_ALREADY_LOGGED_IN);
 }
 
 static void

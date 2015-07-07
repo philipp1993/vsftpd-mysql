@@ -30,6 +30,7 @@
 #include "ssl.h"
 #include "readwrite.h"
 #include "privsock.h"
+#include "locales.h"
 
 static void init_data_sock_params(struct vsf_session* p_sess, int sock_fd);
 static filesize_t calc_num_send(int file_fd, filesize_t init_offset);
@@ -122,12 +123,12 @@ vsf_ftpdataio_get_pasv_fd(struct vsf_session* p_sess)
   if (remote_fd == -1)
   {
     vsf_cmdio_write(p_sess, FTP_BADSENDCONN,
-                    "Konnte keine Verbindung aufbauen.");
+                    FTP_BAD_CONNECTION_CMDIO_LINE);
     return remote_fd;
   }
   else if (remote_fd == -2)
   {
-    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, "Ihre IP Adresse wurde gesperrt.");
+    vsf_cmdio_write(p_sess, FTP_BADSENDCONN, FTP_IP_IS_BLOCKED);
     return -1;
   }
   init_data_sock_params(p_sess, remote_fd);
@@ -149,7 +150,7 @@ vsf_ftpdataio_get_port_fd(struct vsf_session* p_sess)
   if (vsf_sysutil_retval_is_error(remote_fd))
   {
     vsf_cmdio_write(p_sess, FTP_BADSENDCONN,
-                    "Konnte keine Verbindung aufbauen.");
+                    FTP_BAD_CONNECTION_CMDIO_LINE);
     return -1;
   }
   init_data_sock_params(p_sess, remote_fd);

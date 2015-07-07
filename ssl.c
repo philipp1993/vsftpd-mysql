@@ -21,6 +21,7 @@
 #include "utility.h"
 #include "builddefs.h"
 #include "logging.h"
+#include "locales.h"
 
 #ifdef VSF_BUILD_SSL
 
@@ -167,7 +168,7 @@ ssl_control_handshake(struct vsf_session* p_sess)
   if (!ssl_session_init(p_sess))
   {
     struct mystr err_str = INIT_MYSTR;
-    str_alloc_text(&err_str, "Verbindungsaushandlung fehlgeschlagen: ");
+    str_alloc_text(&err_str, FTP_SSL_HANDSHAKE_FAILED);
     /* Technically, we shouldn't leak such detailed error messages. */
     str_append_text(&err_str, get_ssl_error());
     vsf_cmdio_write_str(p_sess, FTP_TLS_FAIL, &err_str);
@@ -185,7 +186,7 @@ handle_auth(struct vsf_session* p_sess)
       str_equal_text(&p_sess->ftp_arg_str, "SSL") ||
       str_equal_text(&p_sess->ftp_arg_str, "TLS-P"))
   {
-    vsf_cmdio_write(p_sess, FTP_AUTHOK, "Fortfahren mit Verbindungsaushandlung.");
+    vsf_cmdio_write(p_sess, FTP_AUTHOK, FTP_SSL_CONTINUE);
     ssl_control_handshake(p_sess);
     if (str_equal_text(&p_sess->ftp_arg_str, "SSL") ||
         str_equal_text(&p_sess->ftp_arg_str, "TLS-P"))
@@ -195,7 +196,7 @@ handle_auth(struct vsf_session* p_sess)
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_BADAUTH, "Unbekannter AUTH Typ.");
+    vsf_cmdio_write(p_sess, FTP_BADAUTH, FTP_UNKNOWN_AUTH_CMDIO_LINE);
   }
 }
 
@@ -204,11 +205,11 @@ handle_pbsz(struct vsf_session* p_sess)
 {
   if (!p_sess->control_use_ssl)
   {
-    vsf_cmdio_write(p_sess, FTP_BADPBSZ, "PBSZ benoetigt eine sichere Verbindung.");
+    vsf_cmdio_write(p_sess, FTP_BADPBSZ, FTP_SSL_PBSZ_REQUIRE);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_PBSZOK, "PBSZ auf 0 gesetzt.");
+    vsf_cmdio_write(p_sess, FTP_PBSZOK, FTP_SSL_PBSZ_ZERO);
   }
 }
 
@@ -218,26 +219,26 @@ handle_prot(struct vsf_session* p_sess)
   str_upper(&p_sess->ftp_arg_str);
   if (!p_sess->control_use_ssl)
   {
-    vsf_cmdio_write(p_sess, FTP_BADPROT, "PROT benoetigt eine sichere Verbindung.");
+    vsf_cmdio_write(p_sess, FTP_BADPROT, FTP_SSL_PROT_REQUIRE);
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "C"))
   {
     p_sess->data_use_ssl = 0;
-    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT jetzt Frei.");
+    vsf_cmdio_write(p_sess, FTP_PROTOK, FTP_SSL_PROT_FREE);
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "P"))
   {
     p_sess->data_use_ssl = 1;
-    vsf_cmdio_write(p_sess, FTP_PROTOK, "PROT jetzt Privat.");
+    vsf_cmdio_write(p_sess, FTP_PROTOK, FTP_SSL_PROT_PRIVATE);
   }
   else if (str_equal_text(&p_sess->ftp_arg_str, "S") ||
            str_equal_text(&p_sess->ftp_arg_str, "E"))
   {
-    vsf_cmdio_write(p_sess, FTP_NOHANDLEPROT, "PROT nicht unterstuetzt.");
+    vsf_cmdio_write(p_sess, FTP_NOHANDLEPROT, FTP_SSL_PROT_NOT);
   }
   else
   {
-    vsf_cmdio_write(p_sess, FTP_NOSUCHPROT, "PROT nicht erkannt.");
+    vsf_cmdio_write(p_sess, FTP_NOSUCHPROT, FTP_SSL_PROT_UNKNOWN);
   }
 }
 
