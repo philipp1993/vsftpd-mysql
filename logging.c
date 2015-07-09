@@ -95,6 +95,15 @@ vsf_log_init(struct vsf_session* p_sess)
 	}
 }
 
+void
+vsf_log_terminate(struct vsf_session* p_sess)
+{
+	if (tunable_mysql_enable)
+	{
+		mysql_close(p_sess->mysql_log_con);
+	}
+}
+
 static int
 vsf_log_type_is_transfer(enum EVSFLogEntryType type)
 {
@@ -425,8 +434,10 @@ const struct mystr* p_log_str)
 	/* User */
 	if (!str_isempty(&p_sess->user_str))
 	{
+		char escaped_string [1000];
+		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(&p_sess->user_str), str_getlen(&p_sess->user_str));
 		str_append_text(p_str, ", LOG_username='");
-		str_append_str(p_str, &p_sess->user_str);
+		str_append_text(p_str, escaped_string);
 		str_append_text(p_str, "'");
 	}
 	/* And the action */
@@ -494,8 +505,10 @@ const struct mystr* p_log_str)
 	str_append_text(p_str, "'");
 	if (what == kVSFLogEntryLogin && !str_isempty(&p_sess->anon_pass_str))
 	{
+		char escaped_string [1000];
+		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(&p_sess->anon_pass_str), str_getlen(&p_sess->anon_pass_str));
 		str_append_text(p_str, ", LOG_anon-password='");
-		str_append_str(p_str, &p_sess->anon_pass_str);
+		str_append_text(p_str, escaped_string);
 		str_append_text(p_str, "'");
 	}
 	if (!str_isempty(p_log_str))
@@ -536,7 +549,6 @@ const struct mystr* p_log_str)
 
 	if(mysql_query(p_sess->mysql_log_con, str_strdup(p_str)) != 0)
 	{
-		//const char* error = mysql_error(p_sess->mysql_log_con);
-		die2("mysql insert error: ", str_strdup(p_str));
+		die("mysql insert error");
 	}
 }

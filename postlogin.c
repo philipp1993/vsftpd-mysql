@@ -1899,7 +1899,7 @@ data_transfer_checks_ok(struct vsf_session* p_sess)
        (tunable_force_anon_data_ssl && p_sess->is_anonymous)))
   {
     vsf_cmdio_write(
-      p_sess, FTP_NEEDENCRYPT, "Data connections must be encrypted.");
+      p_sess, FTP_NEEDENCRYPT, FTP_SHOW_DATA_NEED_CRYPT);
     return 0;
   }
   return 1;

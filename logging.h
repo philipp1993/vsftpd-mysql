@@ -31,6 +31,15 @@ enum EVSFLogEntryType
  */
 void vsf_log_init(struct vsf_session* p_sess);
 
+/* vsf_log_terminate()
+ * PURPOSE
+ * Close the MySQL connection if MySQL logging is used
+ * PARAMETERS
+ * p_sess       - the current session object
+ */
+void
+vsf_log_terminate(struct vsf_session* p_sess);
+
 /* vsf_log_start_entry()
  * PURPOSE
  * Denote the start of a logged operation. Importantly, timing information

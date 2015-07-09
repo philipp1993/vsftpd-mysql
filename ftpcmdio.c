@@ -84,6 +84,7 @@ vsf_cmdio_write_exit(struct vsf_session* p_sess, int status, const char* p_text,
    * connections, where the SSL control channel slave is in a separate
    * process.
    */
+  vsf_log_terminate(p_sess);
   vsf_sysutil_activate_noblock(VSFTP_COMMAND_FD);
   vsf_sysutil_shutdown_read_failok(VSFTP_COMMAND_FD);
   vsf_cmdio_write(p_sess, status, p_text);
