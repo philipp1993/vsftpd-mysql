@@ -563,6 +563,12 @@ error. If someone can point me to a solution for fixing the seccomp policy that 
 
 Default: NO
 .TP
+.B mysql_debug
+If enabled, and the INSERT query goes wrong the whole query string will be send to the client.
+Enably it ONLY for debug purpose. Exposing your query string can easier lead to sql injection attacks.
+
+Default: NO
+.TP
 .B tcp_wrappers
 If enabled, and vsftpd was compiled with tcp_wrappers support, incoming
 connections will be fed through tcp_wrappers access control. Furthermore,

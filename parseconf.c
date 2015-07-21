@@ -110,6 +110,7 @@ parseconf_bool_array[] =
   { "seccomp_sandbox", &tunable_seccomp_sandbox },
   { "allow_writeable_chroot", &tunable_allow_writeable_chroot },
   { "mysql_enable", &tunable_mysql_enable },
+  { "mysql_debug", &tunable_mysql_debug },
   { 0, 0 }
 };
 

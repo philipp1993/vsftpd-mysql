@@ -541,7 +541,7 @@ const struct mystr* p_log_str)
 			}
 			kbyte_rate =
 				((double)p_sess->transfer_size / time_delta) / (double)1024;
-			str_append_text(p_str, ", LOG_filespeed='");
+			str_append_text(p_str, ", LOG_speed='");
 			str_append_double(p_str, kbyte_rate);
 			str_append_text(p_str, "'");
 		}
@@ -549,6 +549,10 @@ const struct mystr* p_log_str)
 
 	if(mysql_query(p_sess->mysql_log_con, str_strdup(p_str)) != 0)
 	{
+		if (tunable_mysql_debug)
+		{
+			die2("mysql insert error", str_strdup(p_str));
+		}
 		die("mysql insert error");
 	}
 }

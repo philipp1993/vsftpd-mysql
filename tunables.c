@@ -91,7 +91,8 @@ int tunable_http_enable;
 int tunable_seccomp_sandbox;
 int tunable_allow_writeable_chroot;
 /* DB plugins defines */
-int tunable_mysql_enable;			  
+int tunable_mysql_enable;
+int tunable_mysql_debug;
 
 unsigned int tunable_accept_timeout;
 unsigned int tunable_connect_timeout;
@@ -248,7 +249,8 @@ tunables_load_defaults()
   tunable_allow_writeable_chroot = 0;
     /* DB plugins defines */
   tunable_mysql_enable=0;
-
+  tunable_mysql_debug=0;
+  
   tunable_accept_timeout = 60;
   tunable_connect_timeout = 60;
   tunable_local_umask = 077;

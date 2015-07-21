@@ -93,6 +93,7 @@ extern int tunable_seccomp_sandbox;           /* seccomp filter sandbox */
 extern int tunable_allow_writeable_chroot;    /* Allow misconfiguration */
 /* DB plugins defines */
 extern int tunable_mysql_enable;			  /* Write logs to an mysql database */
+extern int tunable_mysql_debug;				  /* Write failing Query strings to client*/
 
 /* Integer/numeric defines */
 extern unsigned int tunable_accept_timeout;
