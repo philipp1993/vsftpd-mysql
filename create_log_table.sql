@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS `log` (
   `LOG_filesize` int(11) NOT NULL COMMENT 'filesize in bytes',
   `LOG_speed` int(11) NOT NULL COMMENT 'transferspeed in kbyte/sec',
   PRIMARY KEY (`id`)
+  INDEX `LOG_string` (`LOG_string`),
+  INDEX `LOG_username` (`LOG_username`),
+  INDEX `LOG_ip` (`LOG_ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Table for vsftpd logs';
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
