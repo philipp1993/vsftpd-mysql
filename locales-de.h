@@ -115,7 +115,7 @@
 #define FTP_GIVE_ANY_PW "Jedes beliebige Passwort ist ok."
 #define FTP_COULD_NOT_CHANGE_USER "Kann Benutzer nicht wechseln."
 #define FTP_ALREADY_LOGGED_IN "Schon angemeldet."
-#define FTP_BAD_CONNECTION_CMDIO_LINE "Konnte keine Verbindung aufbauen."
+#define FTP_BAD_CONNECTION_CMDIO_LINE "Konnte keine Verbindung aufbauen. Client Firewall?"
 #define FTP_IP_IS_BLOCKED "Ihre IP Adresse wurde gesperrt."
 #define FTP_ALWAYS_UFT8_CMDIO_LINE "Immer im UFT8 Modus."
 #define FTP_BAD_OPTION_CMDIO_LINE "Option nicht verstanden."
@@ -133,3 +133,6 @@
 #define FTP_INPUT_LINE_LONG_CMDIO_LINE "Input line too long."
 #define FTP_500_STRING "500 FEHLER: "
 #define FTP_500_SIZE 12 //the number of chars of the FTP_500_STRING
+#define FTP_SSL_FAILED_1  "SSL Verbindung fehlgeschlagen"
+#define FTP_SSL_FAILED_2 "; Session wiederverwenden notwendig"
+#define FTP_SSL_FAILED_3 ": Siehe require_ssl_reuse Option in vsftpd.conf"

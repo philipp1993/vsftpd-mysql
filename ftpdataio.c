@@ -183,12 +183,14 @@ vsf_ftpdataio_post_mark_connect(struct vsf_session* p_sess)
   if (ret != 1)
   {
     static struct mystr s_err_msg;
-    str_alloc_text(&s_err_msg, "SSL connection failed");
+    str_alloc_text(&s_err_msg, FTP_SSL_FAILED_1);
     if (tunable_require_ssl_reuse)
     {
-      str_append_text(&s_err_msg, "; session reuse required");
-      str_append_text(
-          &s_err_msg, ": see require_ssl_reuse option in vsftpd.conf man page");
+      str_append_text(&s_err_msg, FTP_SSL_FAILED_2);
+	    if (tunable_debug_ssl)
+		{
+			str_append_text( &s_err_msg, FTP_SSL_FAILED_3);
+		}
     }
     vsf_cmdio_write_str(p_sess, FTP_DATATLSBAD, &s_err_msg);
   }

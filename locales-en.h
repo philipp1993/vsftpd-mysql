@@ -133,3 +133,6 @@
 #define FTP_INPUT_LINE_LONG_CMDIO_LINE "Input line too long."
 #define FTP_500_STRING "500 OOPS: "
 #define FTP_500_SIZE 10 //the number of chars of the FTP_500_STRING
+#define FTP_SSL_FAILED_1  "SSL connection failed"
+#define FTP_SSL_FAILED_2 "; session reuse required"
+#define FTP_SSL_FAILED_3 ": see require_ssl_reuse option in vsftpd.conf man page"
