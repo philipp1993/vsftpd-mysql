@@ -85,9 +85,9 @@ vsf_cmdio_write_exit(struct vsf_session* p_sess, int status, const char* p_text,
    * process.
    */
   vsf_log_terminate(p_sess);
+  vsf_cmdio_write(p_sess, status, p_text);
   vsf_sysutil_activate_noblock(VSFTP_COMMAND_FD);
   vsf_sysutil_shutdown_read_failok(VSFTP_COMMAND_FD);
-  vsf_cmdio_write(p_sess, status, p_text);
   vsf_sysutil_shutdown_failok(VSFTP_COMMAND_FD);
   vsf_sysutil_exit(exit_val);
 }
