@@ -143,3 +143,4 @@
 #define FTP_SECUTIL_LOCATE_USER "Konnte Benutzer nicht finden:"
 #define FTP_SECUTIL_NOT_RUNNING_ROOT "vsf_secutil_change_credentials: wurde nicht als root gestartet"
 #define FTP_SECUTIL_CANNOT_CHDIR "Konnte Verzeichnis nicht wechseln:"
+#define FTP_PWD_TAIL "\" ist das aktuelle Verzeichnis"

@@ -1035,6 +1035,18 @@ vsf_sysutil_strdup(const char* p_str)
   return strdup(p_str);
 }
 
+char*
+vsf_sysutil_strndup(const char* p_str, unsigned int p_len)
+{
+  char *new = (char *)malloc(p_len+1);
+
+  if (new == NULL)
+    return NULL;
+
+  new[p_len]='\0';
+  return (char *)memcpy(new, p_str, p_len);
+}
+
 void
 vsf_sysutil_memclr(void* p_dest, unsigned int size)
 {
@@ -2052,6 +2064,19 @@ vsf_sysutil_sockaddr_set_ipv6addr(struct vsf_sysutil_sockaddr* p_sockptr,
   {
     bug("bad family");
   }
+}
+
+int
+vsf_sysutil_sockaddr_get_ipv6scope(struct vsf_sysutil_sockaddr* p_sockptr)
+{
+  return p_sockptr->u.u_sockaddr_in6.sin6_scope_id;
+}
+
+void
+vsf_sysutil_sockaddr_set_ipv6scope(struct vsf_sysutil_sockaddr* p_sockptr,
+                                  const int scope_id)
+{
+  p_sockptr->u.u_sockaddr_in6.sin6_scope_id = scope_id;
 }
 
 const void*

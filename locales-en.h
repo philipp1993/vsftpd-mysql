@@ -143,3 +143,4 @@
 #define FTP_SECUTIL_LOCATE_USER "cannot locate user entry:"
 #define FTP_SECUTIL_NOT_RUNNING_ROOT "vsf_secutil_change_credentials: not running as root"
 #define FTP_SECUTIL_CANNOT_CHDIR "cannot change directory:"
+#define FTP_PWD_TAIL "\" is the current directory"

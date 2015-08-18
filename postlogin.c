@@ -476,7 +476,7 @@ handle_pwd(struct vsf_session* p_sess)
   /* Enclose pathname in quotes */
   str_alloc_text(&s_pwd_res_str, "\"");
   str_append_str(&s_pwd_res_str, &s_cwd_buf_mangle_str);
-  str_append_text(&s_pwd_res_str, "\"");
+  str_append_text(&s_pwd_res_str, FTP_PWD_TAIL);
   vsf_cmdio_write_str(p_sess, FTP_PWDOK, &s_pwd_res_str);
 }
 
