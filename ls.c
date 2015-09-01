@@ -410,8 +410,8 @@ vsf_filename_passes_filter(const struct mystr* p_filename_str,
     ret = 0;
   }
 out:
-  free(normname);
-  free(path);
+  free((char*)normname);
+  free((char*)path);
   str_free(&normalize_filename_str);
   str_free(&filter_remain_str);
   str_free(&name_remain_str);

@@ -29,6 +29,7 @@
 #include <sys/types.h>
 
 #include <linux/filter.h>
+#include <linux/futex.h>
 
 #include <asm/unistd.h>
 
@@ -308,6 +309,15 @@ seccomp_sandbox_setup_base()
 
   /* Always need to be able to exit ! */
   allow_nr(__NR_exit_group);
+  
+  if (tunable_mysql_enable)
+  {
+    allow_nr_2_arg_match(__NR_mmap, 3, PROT_READ|PROT_WRITE, 4, MAP_PRIVATE|MAP_ANONYMOUS);
+    allow_nr_1_arg_match(__NR_futex, 2, FUTEX_WAKE_PRIVATE);
+    allow_nr_1_arg_match(__NR_futex, 2, FUTEX_WAKE);
+    allow_nr(__NR_poll);
+  }
+  
 }
 
 void

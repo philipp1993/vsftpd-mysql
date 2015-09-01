@@ -108,7 +108,7 @@
 #define FTP_SHOW_DATA_NEED_CRYPT "Datenuebertragung muss verschluesselt sein"
 #define FTP_SHOW_LOGGEND_ON_WHILE_LOGIN "     Beim Verbindungsaufbau waren "
 #define FTP_SHOW_LOGGEND_ON_WHILE_LOGIN2 " Benutzer verbunden\r\n"
-#define FTP_VSFTPD_TAIL " - 20150730\r\n"
+#define FTP_VSFTPD_TAIL " - 20150901\r\n"
 #define FTP_SHOW_END_OF_STATUS "Ende des Status"
 #define FTP_USE_FIRST_CMDIO_LINE "Benutze PORT oder PASV zuerst."
 #define FTP_NO_CHANGE_FROM_GUEST "Kein Wechsel vom Gast Benutzer moeglich."
