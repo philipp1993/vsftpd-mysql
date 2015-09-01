@@ -186,6 +186,7 @@ int vsf_sysutil_wait_get_exitcode(
 /* Various string functions */
 unsigned int vsf_sysutil_strlen(const char* p_text);
 char* vsf_sysutil_strdup(const char* p_str);
+char* vsf_sysutil_strndup(const char* p_str, unsigned int p_len);
 void vsf_sysutil_memclr(void* p_dest, unsigned int size);
 void vsf_sysutil_memcpy(void* p_dest, const void* p_src,
                         const unsigned int size);
@@ -228,6 +229,10 @@ void vsf_sysutil_sockaddr_set_ipv4addr(struct vsf_sysutil_sockaddr* p_sockptr,
                                        const unsigned char* p_raw);
 void vsf_sysutil_sockaddr_set_ipv6addr(struct vsf_sysutil_sockaddr* p_sockptr,
                                        const unsigned char* p_raw);
+void vsf_sysutil_sockaddr_set_ipv6scope(struct vsf_sysutil_sockaddr* p_sockptr,
+                                       const int scope_id);
+int vsf_sysutil_sockaddr_get_ipv6scope(struct vsf_sysutil_sockaddr* p_sockptr);
+
 void vsf_sysutil_sockaddr_set_any(struct vsf_sysutil_sockaddr* p_sockaddr);
 unsigned short vsf_sysutil_sockaddr_get_port(
     const struct vsf_sysutil_sockaddr* p_sockptr);

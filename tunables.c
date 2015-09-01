@@ -234,7 +234,7 @@ tunables_load_defaults()
   tunable_debug_ssl = 0;
   tunable_require_cert = 0;
   tunable_validate_cert = 0;
-  tunable_strict_ssl_read_eof = 0;
+  tunable_strict_ssl_read_eof = 1;
   tunable_strict_ssl_write_shutdown = 0;
   tunable_ssl_request_cert = 1;
   tunable_delete_failed_uploads = 0;
@@ -279,7 +279,7 @@ tunables_load_defaults()
   tunable_mysql_database_port=0; //use built-in value
   tunable_mysql_database_connectionflags=0; //none
 
-  install_str_setting("/usr/share/empty", &tunable_secure_chroot_dir);
+  install_str_setting("/var/run/vsftpd/empty", &tunable_secure_chroot_dir);
   install_str_setting("ftp", &tunable_ftp_username);
   install_str_setting("root", &tunable_chown_username);
   install_str_setting("/var/log/xferlog", &tunable_xferlog_file);
@@ -289,7 +289,7 @@ tunables_load_defaults()
   install_str_setting(0, &tunable_ftpd_banner);
   install_str_setting("/etc/vsftpd.banned_emails", &tunable_banned_email_file);
   install_str_setting("/etc/vsftpd.chroot_list", &tunable_chroot_list_file);
-  install_str_setting("ftp", &tunable_pam_service_name);
+  install_str_setting("vsftpd", &tunable_pam_service_name);
   install_str_setting("ftp", &tunable_guest_username);
   install_str_setting("/etc/vsftpd.user_list", &tunable_userlist_file);
   install_str_setting(0, &tunable_anon_root);
@@ -309,7 +309,7 @@ tunables_load_defaults()
   install_str_setting("/usr/share/ssl/certs/vsftpd.pem",
                       &tunable_rsa_cert_file);
   install_str_setting(0, &tunable_dsa_cert_file);
-  install_str_setting("AES128-SHA:DES-CBC3-SHA", &tunable_ssl_ciphers);
+  install_str_setting("ECDHE-RSA-AES256-GCM-SHA384", &tunable_ssl_ciphers);
   install_str_setting(0, &tunable_rsa_private_key_file);
   install_str_setting(0, &tunable_dsa_private_key_file);
   install_str_setting(0, &tunable_ca_certs_file);

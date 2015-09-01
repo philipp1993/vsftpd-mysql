@@ -1,0 +1,14 @@
+https://sources.debian.net/src/vsftpd/3.0.2-20/debian/patches/
+
+APPLIED PATCHES:
+
+0001-builddefs.patch
+0002-config.patch
+0003-db-doc.patch
+0004-link-local.patch
+0005-whitespaces.patch
+0006-greedy.patch
+0015-disable-clone-newpid.patch
+0030-kfreebsd.patch
+0050-CVE-2015-1419.patch
+

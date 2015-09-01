@@ -105,6 +105,10 @@
   #define VSF_SYSDEP_HAVE_SETPROCTITLE
 #endif
 
+#if defined(__FreeBSD_kernel__)
+  #undef VSF_SYSDEP_HAVE_LIBCAP
+#endif
+
 #if defined(__NetBSD__)
   #include <stdlib.h>
   #define VSF_SYSDEP_HAVE_SETPROCTITLE
@@ -1270,7 +1274,7 @@ vsf_sysutil_fork_isolate_all_failok()
   if (cloneflags_work)
   {
     int ret = syscall(__NR_clone,
-                      CLONE_NEWPID | CLONE_NEWIPC | CLONE_NEWNET | SIGCHLD,
+                      CLONE_NEWIPC | CLONE_NEWNET | SIGCHLD,
                       NULL);
     if (ret != -1 || (errno != EINVAL && errno != EPERM))
     {
@@ -1293,7 +1297,7 @@ vsf_sysutil_fork_isolate_failok()
   static int cloneflags_work = 1;
   if (cloneflags_work)
   {
-    int ret = syscall(__NR_clone, CLONE_NEWPID | CLONE_NEWIPC | SIGCHLD, NULL);
+    int ret = syscall(__NR_clone, CLONE_NEWIPC | SIGCHLD, NULL);
     if (ret != -1 || (errno != EINVAL && errno != EPERM))
     {
       if (ret == 0)

@@ -22,12 +22,12 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
   struct vsf_sysutil_user* p_user;
   if (!vsf_sysutil_running_as_root())
   {
-    bug("vsf_secutil_change_credentials: not running as root");
+    bug(FTP_SECUTIL_NOT_RUNNING_ROOT);
   }
   p_user = str_getpwnam(p_user_str);
   if (p_user == 0)
   {
-    die2("Konnte Benutzer nicht finden:", str_getbuf(p_user_str));
+    die2(FTP_SECUTIL_LOCATE_USER, str_getbuf(p_user_str));
   }
   {
     struct mystr dir_str = INIT_MYSTR;
@@ -69,7 +69,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
       retval = str_chdir(&dir_str);
       if (retval != 0)
       {
-        die2("Konnte Verzeichnis nicht wechseln:", str_getbuf(&dir_str));
+        die2(FTP_SECUTIL_CANNOT_CHDIR, str_getbuf(&dir_str));
       }
       if (p_ext_dir_str && !str_isempty(p_ext_dir_str))
       {
@@ -84,7 +84,7 @@ vsf_secutil_change_credentials(const struct mystr* p_user_str,
       }
       if (retval != 0)
       {
-        die2("Konnte Verzeichnis nicht wechseln:", str_getbuf(p_ext_dir_str));
+        die2(FTP_SECUTIL_CANNOT_CHDIR, str_getbuf(p_ext_dir_str));
       }
       if (options & VSF_SECUTIL_OPTION_CHANGE_EUID)
       {
