@@ -108,7 +108,7 @@
 #define FTP_SHOW_DATA_NEED_CRYPT "Data connections must be encrypted."
 #define FTP_SHOW_LOGGEND_ON_WHILE_LOGIN "     At session startup, client count was "
 #define FTP_SHOW_LOGGEND_ON_WHILE_LOGIN2 "\r\n"
-#define FTP_VSFTPD_TAIL " - 20150901\r\n"
+#define FTP_VSFTPD_TAIL " \r\n"
 #define FTP_SHOW_END_OF_STATUS "End of status"
 #define FTP_USE_FIRST_CMDIO_LINE "Use PORT or PASV first."
 #define FTP_NO_CHANGE_FROM_GUEST "Can't change from guest user."

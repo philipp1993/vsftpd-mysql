@@ -66,6 +66,7 @@ struct vsf_session
   struct mystr banned_email_str;
   struct mystr email_passwords_str;
   struct mystr userlist_str;
+  struct mystr nonforcelist_str;
   struct mystr banner_str;
   int tcp_wrapper_ok;
 
@@ -96,6 +97,7 @@ struct vsf_session
   /* Secure connections state */
   int control_use_ssl;
   int data_use_ssl;
+  int non_force_ssl;
   void* p_ssl_ctx;
   void* p_control_ssl;
   void* p_data_ssl;

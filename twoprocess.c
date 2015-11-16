@@ -121,6 +121,19 @@ vsf_two_process_start(struct vsf_session* p_sess)
   if (tunable_ssl_enable)
   {
     ssl_comm_channel_set_producer_context(p_sess);
+	if(tunable_ssl_nonforce_file_enable)
+	{
+		int retval = -1;
+		if(tunable_ssl_nonforce_file)
+		{
+			retval = str_fileread(&p_sess->nonforcelist_str, tunable_ssl_nonforce_file,
+								VSFTP_CONF_FILE_MAX);
+		}
+		if (vsf_sysutil_retval_is_error(retval))
+		{
+		  die2("cannot read nonforce ssl list file:", tunable_ssl_nonforce_file);
+		}
+	}
   }
   if (tunable_local_enable && tunable_userlist_enable)
   {
@@ -189,6 +202,7 @@ vsf_two_process_login(struct vsf_session* p_sess,
   priv_sock_send_str(p_sess->child_fd, p_pass_str);
   priv_sock_send_int(p_sess->child_fd, p_sess->control_use_ssl);
   priv_sock_send_int(p_sess->child_fd, p_sess->data_use_ssl);
+  priv_sock_send_int(p_sess->child_fd, p_sess->non_force_ssl);
   result = priv_sock_get_result(p_sess->child_fd);
   if (result == PRIV_SOCK_RESULT_OK)
   {
@@ -310,6 +324,7 @@ process_login_req(struct vsf_session* p_sess)
     priv_sock_get_str(p_sess->parent_fd, &password_str);
     p_sess->control_use_ssl = priv_sock_get_int(p_sess->parent_fd);
     p_sess->data_use_ssl = priv_sock_get_int(p_sess->parent_fd);
+	p_sess->non_force_ssl = priv_sock_get_int(p_sess->parent_fd);
     if (!tunable_ssl_enable)
     {
       p_sess->control_use_ssl = 0;

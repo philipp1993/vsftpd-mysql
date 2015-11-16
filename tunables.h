@@ -72,6 +72,7 @@ extern int tunable_tlsv1;                     /* Allow TLSv1 */
 extern int tunable_tilde_user_enable;         /* Support e.g. ~chris */
 extern int tunable_force_anon_logins_ssl;     /* Require anon logins use SSL */
 extern int tunable_force_anon_data_ssl;       /* Require anon data uses SSL */
+extern int tunable_ssl_nonforce_file_enable;   /* Not force SSL for specific users*/
 extern int tunable_mdtm_write;                /* Allow MDTM to set timestamps */
 extern int tunable_lock_upload_files;         /* Lock uploading files */
 extern int tunable_pasv_addr_resolve;         /* DNS resolve pasv_addr */
@@ -134,6 +135,7 @@ extern const char* tunable_chroot_list_file;
 extern const char* tunable_pam_service_name;
 extern const char* tunable_guest_username;
 extern const char* tunable_userlist_file;
+extern const char* tunable_ssl_nonforce_file;
 extern const char* tunable_anon_root;
 extern const char* tunable_local_root;
 extern const char* tunable_banner_file;

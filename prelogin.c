@@ -238,8 +238,20 @@ handle_user_command(struct vsf_session* p_sess)
   if (tunable_ssl_enable && !is_anon && !p_sess->control_use_ssl &&
       tunable_force_local_logins_ssl)
   {
-    vsf_cmdio_write_exit(
-      p_sess, FTP_LOGINERR, FTP_NO_SSL_LOCAL, 1);
+	if (tunable_ssl_nonforce_file_enable)
+	{
+		p_sess->non_force_ssl = str_contains_line(&p_sess->nonforcelist_str, &p_sess->user_str);
+		if(!p_sess->non_force_ssl)
+		{
+			vsf_cmdio_write_exit(
+              p_sess, FTP_LOGINERR, FTP_NO_SSL_LOCAL, 1);
+		}
+	}
+	else
+	{
+		vsf_cmdio_write_exit(
+          p_sess, FTP_LOGINERR, FTP_NO_SSL_LOCAL, 1);
+	}
   }
   if (tunable_ssl_enable && is_anon && !p_sess->control_use_ssl &&
       tunable_force_anon_logins_ssl)

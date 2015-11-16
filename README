@@ -3,7 +3,7 @@ Author: Chris Evans
 Changes by: Philipp Koch (github@philipp-koch.net)
 Contact: scarybeasts@gmail.com
 Website: http://vsftpd.beasts.org/
-		 https://philipp-koch.net/
+         https://philipp-koch.net/
 - All options are documented in the vsftpd.conf.5 manual page.
 - See the FAQ file for solutions to frequently asked questions.
 - Visit http://vsftpd.beasts.org/ for vsftpd news and releases.
@@ -33,11 +33,13 @@ What are the changes made?
 
 Logs can be insert into an MySQL database.
 
-root logins can be discarded right away after the USER command.
+Root logins can be discarded right away after the USER command.
+
+Specified users can use a non-ssl connection while all others are forced to use ssl. 
 
 Many strings (messages) which are presented to the user are translated to german and outsourced to locales-de.h
 The original strings are in locales-en.h
-Rename one file to locales.h before compilation
+Rename one file to locales.h before compiling.
 
 
 Installation
