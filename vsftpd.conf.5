@@ -254,6 +254,7 @@ is activated. If activated, all non-anonymous logins are forced to use a secure
 SSL connection in order to send the password.
 
 Default: YES
+
 .TP
 .B guest_enable
 If enabled, all non-anonymous logins are classed as "guest" logins. A guest
@@ -498,6 +499,13 @@ option, you are declaring that you trust the security of your installed
 OpenSSL library.
 
 Default: YES
+.TP
+.B ssl_nonforce_file_enable
+If enabled vsftpd will look for the ssl_nonforce_file file.
+Users listet in the file will not be forced to use ssl regardless the option 
+force_local_data_ssl  or force_local_logins_ssl
+Default: NO
+
 .TP
 .B ssl_request_cert
 If enabled, vsftpd will request (but not necessarily require; see
@@ -1037,6 +1045,12 @@ security precaution as it prevents malicious remote parties forcing a cipher
 which they have found problems with.
 
 Default: DES-CBC3-SHA
+.TP
+.B ssl_nonforce_file
+See ssl_nonforce_file
+The format is one user per line.
+
+Default: /etc/vsftpd.non_ssl
 .TP
 .B user_config_dir
 This powerful option allows the override of any config option specified in

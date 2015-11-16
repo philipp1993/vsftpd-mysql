@@ -1907,9 +1907,12 @@ data_transfer_checks_ok(struct vsf_session* p_sess)
       ((tunable_force_local_data_ssl && !p_sess->is_anonymous) ||
        (tunable_force_anon_data_ssl && p_sess->is_anonymous)))
   {
-    vsf_cmdio_write(
-      p_sess, FTP_NEEDENCRYPT, FTP_SHOW_DATA_NEED_CRYPT);
-    return 0;
+	if (!tunable_ssl_nonforce_file_enable || (tunable_ssl_nonforce_file_enable && !p_sess->non_force_ssl))
+	{
+			vsf_cmdio_write(
+              p_sess, FTP_NEEDENCRYPT, FTP_SHOW_DATA_NEED_CRYPT);
+			  return 0;
+	}
   }
   return 1;
 }

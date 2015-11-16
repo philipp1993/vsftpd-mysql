@@ -65,6 +65,7 @@ int tunable_ssl_enable;
 int tunable_allow_anon_ssl;
 int tunable_force_local_logins_ssl;
 int tunable_force_local_data_ssl;
+int tunable_ssl_nonforce_file_enable;
 int tunable_sslv2;
 int tunable_sslv3;
 int tunable_tlsv1;
@@ -131,6 +132,7 @@ const char* tunable_chroot_list_file;
 const char* tunable_pam_service_name;
 const char* tunable_guest_username;
 const char* tunable_userlist_file;
+const char* tunable_ssl_nonforce_file;
 const char* tunable_anon_root;
 const char* tunable_local_root;
 const char* tunable_banner_file;
@@ -195,6 +197,7 @@ tunables_load_defaults()
   tunable_log_ftp_protocol = 1;
   tunable_guest_enable = 0;
   tunable_userlist_enable = 0;
+  tunable_ssl_nonforce_file_enable = 0;
   tunable_userlist_deny = 1;
   tunable_use_localtime = 0;
   tunable_check_shell = 1;
@@ -292,6 +295,7 @@ tunables_load_defaults()
   install_str_setting("vsftpd", &tunable_pam_service_name);
   install_str_setting("ftp", &tunable_guest_username);
   install_str_setting("/etc/vsftpd.user_list", &tunable_userlist_file);
+  install_str_setting("/etc/vsftpd.non_ssl", &tunable_ssl_nonforce_file);
   install_str_setting(0, &tunable_anon_root);
   install_str_setting(0, &tunable_local_root);
   install_str_setting(0, &tunable_banner_file);
@@ -320,7 +324,7 @@ tunables_load_defaults()
   install_str_setting("localhost",&tunable_mysql_database_host);
   install_str_setting(0,&tunable_mysql_database_socketname);
   install_str_setting("vsftpd",&tunable_mysql_database_dbname);
- install_str_setting("log",&tunable_mysql_database_tablename);
+  install_str_setting("log",&tunable_mysql_database_tablename);
 
 }
 

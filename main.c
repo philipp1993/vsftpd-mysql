@@ -52,7 +52,7 @@ main(int argc, const char* argv[])
     /* Userids */
     -1, -1, -1,
     /* Pre-chroot() cache */
-    INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, 1,
+    INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, INIT_MYSTR, 1,
     /* Logging */
     -1, -1, INIT_MYSTR, 0, 0, 0, INIT_MYSTR, 0, 0,
     /* Buffers */
@@ -64,7 +64,7 @@ main(int argc, const char* argv[])
     /* Home directory */
     INIT_MYSTR,
     /* Secure connection state */
-    0, 0, 0, 0, 0, INIT_MYSTR, 0, -1, -1,
+    0, 0, 0, 0, 0, 0, INIT_MYSTR, 0, -1, -1,
     /* Login fails */
     0
   };
