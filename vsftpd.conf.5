@@ -446,6 +446,29 @@ upload ownership changing, connecting from port 20 and listen ports less than
 1024 are not expected to work. Other options may be impacted.
 
 Default: NO
+
+.TP
+.B download_file
+This option may be set to restrict downloads to files with names matching the
+specified pattern. If a filename also matches the
+.BR deny_file
+pattern, the denial takes precedence. For usage and pattern details, see the
+.BR deny_file
+option.
+
+Default: (none)
+
+.TP
+.B upload_file
+This option may be set to restrict uploads to files with names matching the
+specified pattern. If a filename also matches the
+.BR deny_file
+pattern, the denial takes precedence. For usage and pattern details, see the
+.BR deny_file
+option.
+
+Default: (none)
+
 .TP
 .B seccomp_sandbox
 Make usage of the seccomp_sandbox. ONLY turn off if you have specific problems regarding MySQL users or get something like

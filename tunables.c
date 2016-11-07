@@ -144,6 +144,8 @@ const char* tunable_cmds_allowed;
 const char* tunable_cmds_denied;
 const char* tunable_hide_file;
 const char* tunable_deny_file;
+const char* tunable_upload_file;
+const char* tunable_download_file;
 const char* tunable_user_sub_token;
 const char* tunable_email_password_file;
 const char* tunable_rsa_cert_file;
@@ -307,6 +309,8 @@ tunables_load_defaults()
   install_str_setting(0, &tunable_cmds_denied);
   install_str_setting(0, &tunable_hide_file);
   install_str_setting(0, &tunable_deny_file);
+  install_str_setting(0, &tunable_upload_file);
+  install_str_setting(0, &tunable_download_file);
   install_str_setting(0, &tunable_user_sub_token);
   install_str_setting("/etc/vsftpd.email_passwords",
                       &tunable_email_password_file);

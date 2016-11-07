@@ -254,7 +254,7 @@ vsf_filename_passes_filter(const struct mystr* p_filename_str,
 
   /* normalize filepath */
   path = str_strdup(p_filename_str);
-  normname = realpath(path, NULL);
+  normname = vsf_sysutil_realpath(path, 1);
   if (normname == NULL)
      goto out;
   str_alloc_text(&normalize_filename_str, normname);

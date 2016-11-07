@@ -146,6 +146,8 @@ extern const char* tunable_listen_address6;
 extern const char* tunable_cmds_allowed;
 extern const char* tunable_hide_file;
 extern const char* tunable_deny_file;
+extern const char* tunable_upload_file;
+extern const char* tunable_download_file;
 extern const char* tunable_user_sub_token;
 extern const char* tunable_email_password_file;
 extern const char* tunable_rsa_cert_file;

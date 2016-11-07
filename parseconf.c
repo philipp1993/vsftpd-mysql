@@ -178,6 +178,8 @@ parseconf_str_array[] =
 	{ "cmds_allowed", &tunable_cmds_allowed },
 	{ "hide_file", &tunable_hide_file },
 	{ "deny_file", &tunable_deny_file },
+	{ "upload_file", &tunable_upload_file },
+    { "download_file", &tunable_download_file },
 	{ "user_sub_token", &tunable_user_sub_token },
 	{ "email_password_file", &tunable_email_password_file },
 	{ "rsa_cert_file", &tunable_rsa_cert_file },

@@ -1181,7 +1181,8 @@ handle_mkd(struct vsf_session* p_sess)
   vsf_log_start_entry(p_sess, kVSFLogEntryMkdir);
   str_copy(&p_sess->log_str, &p_sess->ftp_arg_str);
   prepend_path_to_filename(&p_sess->log_str);
-  if (!vsf_access_check_file(&p_sess->ftp_arg_str))
+  if (!vsf_access_check_file(&p_sess->ftp_arg_str) ||
+     !vsf_access_check_file_download(&p_sess->ftp_arg_str))
   {
     vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;
@@ -1218,7 +1219,8 @@ handle_rmd(struct vsf_session* p_sess)
   vsf_log_start_entry(p_sess, kVSFLogEntryRmdir);
   str_copy(&p_sess->log_str, &p_sess->ftp_arg_str);
   prepend_path_to_filename(&p_sess->log_str);
-  if (!vsf_access_check_file(&p_sess->ftp_arg_str))
+  if (!vsf_access_check_file(&p_sess->ftp_arg_str) ||
+     !vsf_access_check_file_download(&p_sess->ftp_arg_str))
   {
     vsf_cmdio_write(p_sess, FTP_NOPERM, PERMISSION_DENIED);
     return;

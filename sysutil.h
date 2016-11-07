@@ -66,6 +66,7 @@ int vsf_sysutil_mkdir(const char* p_dirname, const unsigned int mode);
 int vsf_sysutil_rmdir(const char* p_dirname);
 int vsf_sysutil_chdir(const char* p_dirname);
 int vsf_sysutil_rename(const char* p_from, const char* p_to);
+char* vsf_sysutil_realpath(char const *path, int may_be_fresh);
 
 struct vsf_sysutil_dir;
 struct vsf_sysutil_dir* vsf_sysutil_opendir(const char* p_dirname);

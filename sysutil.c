@@ -1005,6 +1005,51 @@ vsf_sysutil_closedir(struct vsf_sysutil_dir* p_dir)
   }
 }
 
+char*
+vsf_sysutil_realpath(char const *path, int may_be_fresh)
+{
+  { /* existing paths must resolve right away */
+    char *const  resolved = realpath(path, NULL);
+    if ((resolved != NULL) || (errno != ENOENT) || !may_be_fresh)
+    {
+      return  resolved;
+    }
+  }
+
+  { /* try to resolve directory part */
+    char const *filename = strrchr(path, '/');
+    char const *resolved_dir;
+    if(filename == NULL)
+    {
+      filename     = path;
+      resolved_dir = realpath(".", NULL);
+    }
+    else
+    {
+      char const *original_dir;
+      filename++;
+      original_dir = strndup(path, filename-path);
+      resolved_dir = realpath(original_dir, NULL);
+      free((void*)original_dir);
+    }
+    if(resolved_dir == NULL)  return  NULL;
+
+    /* compose path from resolved directory and filename */
+    size_t  dir_len = strlen(resolved_dir);
+    char *resolved;
+
+    /* empty root as slash is added anyways */
+    if (dir_len == 1)  dir_len = 0;
+
+    resolved = (char*)malloc(dir_len+strlen(filename)+2);
+    strcpy(resolved, resolved_dir);
+    free((void*)resolved_dir);
+    resolved[dir_len] = '/';
+    strcpy(resolved+dir_len+1, filename);
+    return  resolved;
+  }
+}
+
 const char*
 vsf_sysutil_next_dirent(struct vsf_sysutil_dir* p_dir)
 {

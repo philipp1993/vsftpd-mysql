@@ -1,4 +1,4 @@
-https://sources.debian.net/src/vsftpd/3.0.2-20/debian/patches/
+https://anonscm.debian.org/cgit/collab-maint/vsftpd.git/tree/debian/patches
 
 APPLIED PATCHES:
 
@@ -11,4 +11,6 @@ APPLIED PATCHES:
 0015-disable-clone-newpid.patch
 0030-kfreebsd.patch
 0050-CVE-2015-1419.patch
-
+0065-upload_download_filename_pattern.patch
+0070-realpath_wrapper.patch
+0075-logfile.patch
