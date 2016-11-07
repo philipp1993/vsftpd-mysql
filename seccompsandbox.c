@@ -8,6 +8,7 @@
  * sandbox. Works in Ubuntu 11.10 and newer.
  */
 
+#include "defs.h"
 #include "seccompsandbox.h"
 
 #if defined(__linux__) && defined(__x86_64__)
@@ -310,6 +311,7 @@ seccomp_sandbox_setup_base()
   /* Always need to be able to exit ! */
   allow_nr(__NR_exit_group);
   
+  #if VSFTP_COMPILE_MYSQL_LOG
   if (tunable_mysql_enable)
   {
     allow_nr_2_arg_match(__NR_mmap, 3, PROT_READ|PROT_WRITE, 4, MAP_PRIVATE|MAP_ANONYMOUS);
@@ -317,7 +319,7 @@ seccomp_sandbox_setup_base()
     allow_nr_1_arg_match(__NR_futex, 2, FUTEX_WAKE);
     allow_nr(__NR_poll);
   }
-  
+  #endif
 }
 
 void

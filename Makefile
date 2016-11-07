@@ -8,7 +8,7 @@ CFLAGS	= -O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 \
 	-D_FORTIFY_SOURCE=2 \
 	#-pedantic -Wconversion
 
-LIBS	=	`./vsf_findlibs.sh` `mysql_config --cflags --libs`
+LIBS	=	`./vsf_findlibs.sh`
 LINK	=	-Wl,-s
 LDFLAGS	=	-fPIE -pie -Wl,-z,relro -Wl,-z,now
 

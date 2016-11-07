@@ -6,6 +6,7 @@
  * logging.c
  */
 
+#include "defs.h"
 #include "logging.h"
 #include "tunables.h"
 #include "utility.h"
@@ -13,9 +14,11 @@
 #include "sysutil.h"
 #include "sysstr.h"
 #include "session.h"
+#include <stdlib.h>
 
-#include <mysql/mysql.h>
-
+#if VSFTP_COMPILE_MYSQL_LOG
+	#include <mysql/mysql.h>
+#endif
 /* File local functions */
 static int vsf_log_type_is_transfer(enum EVSFLogEntryType type);
 static void vsf_log_common(struct vsf_session* p_sess, int succeeded,
@@ -28,10 +31,12 @@ static void vsf_log_do_log_vsftpd_format(struct vsf_session* p_sess,
 static void vsf_log_do_log_wuftpd_format(struct vsf_session* p_sess,
 struct mystr* p_str, int succeeded);
 static void vsf_log_do_log_to_file(int fd, struct mystr* p_str);
+#if VSFTP_COMPILE_MYSQL_LOG
 static void vsf_log_do_log_mysql(struct vsf_session* p_sess,
 			struct mystr* p_str, int succeeded,
 			enum EVSFLogEntryType what,
 			const struct mystr* p_log_str);
+#endif
 
 void
 vsf_log_init(struct vsf_session* p_sess)
@@ -50,7 +55,7 @@ vsf_log_init(struct vsf_session* p_sess)
 		if (tunable_xferlog_file)
 		{
 			retval = vsf_sysutil_create_or_open_file_append(tunable_xferlog_file,
-				0600);
+				0640);
 		}
 		if (vsf_sysutil_retval_is_error(retval))
 		{
@@ -66,7 +71,7 @@ vsf_log_init(struct vsf_session* p_sess)
 			if (tunable_vsftpd_log_file)
 			{
 				retval = vsf_sysutil_create_or_open_file_append(tunable_vsftpd_log_file,
-					0600);
+					0640);
 			}
 			if (vsf_sysutil_retval_is_error(retval))
 			{
@@ -75,6 +80,7 @@ vsf_log_init(struct vsf_session* p_sess)
 			p_sess->vsftpd_log_fd = retval;
 		}
 	}
+	#if VSFTP_COMPILE_MYSQL_LOG
 	if (tunable_mysql_enable)
 	{
 		p_sess->mysql_log_con = mysql_init(0);
@@ -93,16 +99,19 @@ vsf_log_init(struct vsf_session* p_sess)
 			die2("mysql connect error: ", error);
 		}
 	}
+	#endif
 }
 
+#if VSFTP_COMPILE_MYSQL_LOG
 void
 vsf_log_terminate(struct vsf_session* p_sess)
 {
 	if (tunable_mysql_enable)
 	{
 		mysql_close(p_sess->mysql_log_con);
-	}
+	}	
 }
+#endif
 
 static int
 vsf_log_type_is_transfer(enum EVSFLogEntryType type)
@@ -177,11 +186,14 @@ enum EVSFLogEntryType what, const struct mystr* p_str)
 		vsf_log_do_log_vsftpd_format(p_sess, &s_log_str, succeeded, what, p_str);
 		vsf_log_do_log_to_file(p_sess->vsftpd_log_fd, &s_log_str);
 	}
+	
+	#if VSFTP_COMPILE_MYSQL_LOG
 	/* Handly MySQL logging if appropriate */
 	if(tunable_mysql_enable)
 	{
 		vsf_log_do_log_mysql(p_sess, &s_log_str, succeeded, what, p_str);
 	}
+	#endif
 	/* Handle syslog() line if appropriate */
 	if (tunable_syslog_enable)
 	{
@@ -420,10 +432,12 @@ const struct mystr* p_log_str)
 	}
 }
 
+#if VSFTP_COMPILE_MYSQL_LOG
 static void
 vsf_log_do_log_mysql(struct vsf_session* p_sess, struct mystr* p_str, int succeeded, enum EVSFLogEntryType what,
 const struct mystr* p_log_str)
 {
+	char* escaped_string = 0;
 	str_empty(p_str);
 	str_append_text(p_str, "INSERT IGNORE INTO `");
 	str_append_text(p_str, tunable_mysql_database_dbname);
@@ -434,11 +448,14 @@ const struct mystr* p_log_str)
 	/* User */
 	if (!str_isempty(&p_sess->user_str))
 	{
-		char escaped_string [1000];
+		//+1 because str_getlen returns without trailing zero
+		//*2 because the string escaped could get very big
+		escaped_string = (char*)malloc((str_getlen(&p_sess->user_str)+1)*2);
 		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(&p_sess->user_str), str_getlen(&p_sess->user_str));
 		str_append_text(p_str, ", LOG_username='");
 		str_append_text(p_str, escaped_string);
 		str_append_text(p_str, "'");
+		free(escaped_string);
 	}
 	/* And the action */
 	if (what != kVSFLogEntryFTPInput && what != kVSFLogEntryFTPOutput &&
@@ -505,19 +522,25 @@ const struct mystr* p_log_str)
 	str_append_text(p_str, "'");
 	if (what == kVSFLogEntryLogin && !str_isempty(&p_sess->anon_pass_str))
 	{
-		char escaped_string [1000];
+		//+1 because str_getlen returns without trailing zero
+		//*2 because the string escaped could get very big
+		escaped_string = (char*)malloc((str_getlen(&p_sess->user_str)+1)*2);
 		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(&p_sess->anon_pass_str), str_getlen(&p_sess->anon_pass_str));
 		str_append_text(p_str, ", LOG_anon-password='");
 		str_append_text(p_str, escaped_string);
 		str_append_text(p_str, "'");
+		free(escaped_string);
 	}
 	if (!str_isempty(p_log_str))
 	{
-		char escaped_string [1000];
+		//+1 because str_getlen returns without trailing zero
+		//*2 because the string escaped could get very big
+		escaped_string = (char*)malloc((str_getlen(&p_sess->user_str)+1)*2);
 		mysql_real_escape_string(p_sess->mysql_log_con, escaped_string, str_strdup(p_log_str), str_getlen(p_log_str));
 		str_append_text(p_str, ", LOG_string='");
 		str_append_text(p_str, escaped_string);
 		str_append_text(p_str, "'");
+		free(escaped_string);
 	}
 	if (what != kVSFLogEntryFTPInput && what != kVSFLogEntryFTPOutput &&
 		what != kVSFLogEntryDebug)
@@ -551,8 +574,9 @@ const struct mystr* p_log_str)
 	{
 		if (tunable_mysql_debug)
 		{
-			die2("mysql insert error", str_strdup(p_str));
+			die2("database logging error: ", str_strdup(p_str));
 		}
-		die("mysql insert error");
+		die("database logging error");
 	}
 }
+#endif

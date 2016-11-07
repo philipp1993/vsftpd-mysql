@@ -208,7 +208,9 @@ main(int argc, const char* argv[])
     }
     if (vsf_sysutil_retval_is_error(retval))
     {
+	  #if VSFTP_COMPILE_MYSQL_LOG
 	  vsf_log_terminate(&the_session);
+	  #endif
       die2("cannot read anon e-mail list file:", tunable_banned_email_file);
     }
   }
@@ -218,7 +220,9 @@ main(int argc, const char* argv[])
                               VSFTP_CONF_FILE_MAX);
     if (vsf_sysutil_retval_is_error(retval))
     {
+	  #if VSFTP_COMPILE_MYSQL_LOG
 	  vsf_log_terminate(&the_session);
+	  #endif
       die2("cannot read banner file:", tunable_banner_file);
     }
   }
@@ -233,7 +237,9 @@ main(int argc, const char* argv[])
     }
     if (vsf_sysutil_retval_is_error(retval))
     {
+	  #if VSFTP_COMPILE_MYSQL_LOG
 	  vsf_log_terminate(&the_session);
+	  #endif
       die2("cannot read email passwords file:", tunable_email_password_file);
     }
   }

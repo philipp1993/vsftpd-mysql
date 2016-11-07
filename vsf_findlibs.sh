@@ -73,5 +73,9 @@ if find_func SSL_library_init ssl.o; then
   echo "-lssl -lcrypto";
 fi
 
+if [ `grep -c '#define VSFTP_COMPILE_MYSQL_LOG	1' defs.h` -gt 0 ]; then
+	mysql_config --cflags --libs
+fi
+
 exit 0;
 
